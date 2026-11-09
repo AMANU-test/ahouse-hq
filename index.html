@@ -763,7 +763,7 @@ html.d3 .obox.mini .ob-port .spr{--S:2.6}
 .sign .cnt{display:flex;gap:8px;justify-content:center;font:800 10.5px var(--body);color:#fff;text-shadow:-1px -1px 0 #14203a,1px -1px 0 #14203a,-1px 1px 0 #14203a,1px 1px 0 #14203a}
 .sign .cnt span{display:flex;align-items:center;gap:3px}
 .sign .cnt i{width:8px;height:8px;border-radius:50%;background:var(--sc);box-shadow:0 0 0 1.5px #14203a}
-.lgbar{position:absolute;left:108px;top:76px;z-index:18;display:none;gap:2px;padding:4px;border-radius:14px;flex-wrap:wrap;max-width:calc(100% - 108px - 340px)}
+.lgbar{position:absolute;left:108px;top:86px;z-index:18;display:none;gap:2px;padding:4px;border-radius:14px;flex-wrap:wrap;max-width:calc(100% - 108px - 340px)}
 body[data-tab="map"] .lgbar{display:flex}
 .lg{display:flex;align-items:center;gap:6px;border:0;border-radius:10px;background:none;color:#e4edff;padding:5px 9px 5px 5px;font:800 12px var(--body)}
 .lg:hover{background:#ffffff14}
@@ -1431,6 +1431,17 @@ input:not([type=checkbox]):not([type=range]):focus,textarea:focus,select:focus{o
 .hc-pj span{display:inline-flex;align-items:center;gap:4px}.hc-pj i{width:9px;height:9px;border-radius:50%;flex:none}
 .pf-flags{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:2px 0 8px}.pf-flags .pd-h{margin-right:4px}
 #comm{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;z-index:auto}
+/* v54: brand card stays on one line; badge remove buttons; toast with undo */
+.brand h1{flex-wrap:nowrap;white-space:nowrap}
+.brand>div{min-width:max-content}
+#modechip{display:inline-flex;align-items:center;flex:none}
+.brand .chip{display:inline-flex;align-items:center;white-space:nowrap;line-height:1;margin:0}
+.bd{position:relative}
+.bd-x{position:absolute;right:-2px;top:-4px;width:20px;height:20px;border-radius:50%;border:2px solid #fff;background:#d6455d;color:#fff;font:900 13px/1 var(--body);padding:0;cursor:pointer;display:grid;place-items:center;box-shadow:0 1px 4px #0006}
+.bd-rem{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font:700 12px var(--body);color:var(--mute)}
+.bd-rem button{border:1px dashed #ffffff66;background:transparent;color:inherit;border-radius:99px;padding:3px 9px;font:700 12px var(--body);cursor:pointer}
+.toast .tu{margin-left:12px;border:0;border-radius:8px;background:var(--ah-orange,#f08a2c);color:#fff;font:900 13px var(--body);padding:5px 12px;cursor:pointer}
+
 /* v53: sign-in gate for the GitHub Pages (Supabase) version */
 #sbgate{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;background:#0c1730f2}
 #sbgate .sbcard{width:min(420px,100%);padding:28px 26px;border-radius:20px;background:#12213b;border:1px solid #ffffff2e;color:#fff;text-align:center;font-family:var(--body);box-shadow:0 20px 60px #000a}
@@ -2373,15 +2384,16 @@ const TILES={camp:'data:image/webp;base64,UklGRtQ9AABXRUJQVlA4WAoAAAAQAAAARwMA/Q
 /* ---------- badges: every finished project earns its crew a badge, nothing extra to enter ---------- */
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const onTime=p=>!p.due||!p.finished||p.finished<=p.due; // projects finished before dates were recorded count as on time
-const badgesOf=mid=>Object.entries(st.projects).filter(([,p])=>p.done&&(p.members||[]).includes(mid)).map(([id,p])=>({id,...p})).sort((a,b)=>(a.finished||'').localeCompare(b.finished||''));
+const badgesOf=mid=>Object.entries(st.projects).filter(([,p])=>p.done&&(p.members||[]).includes(mid)&&!(p.revoked||[]).includes(mid)).map(([id,p])=>({id,...p})).sort((a,b)=>(a.finished||'').localeCompare(b.finished||''));
 const bdgN=mid=>badgesOf(mid).length;
+const removedBadges=mid=>Object.entries(st.projects).filter(([,p])=>p.done&&(p.members||[]).includes(mid)&&(p.revoked||[]).includes(mid)).map(([id,p])=>({id,...p}));
 const MM='<svg class="mdl" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5a623"/><path d="M8 3.200l1.400 3 3.200.4-2.400 2.200.7 3.200L8 10.400 5.100 12l.7-3.200L3.400 6.600l3.200-.4Z" fill="#fff6d8"/></svg>';
 const bdgChip=mid=>{const n=bdgN(mid);return n?`<span class="hc-lv" title="${n} project badge${n>1?'s':''}">${MM}${n}</span>`:''};
 const medal=(p,sz=30)=>{const h=hue((p.name||'')+'!');return `<span class="medal" style="--ms:${sz}px" title="${esc(p.name)}: project completed"><svg viewBox="0 0 32 40" aria-hidden="true"><path d="M8 0h6l3 14-8 2Z" style="fill:hsl(${h} 60% 48%)"/><path d="M24 0h-6l-3 14 8 2Z" style="fill:hsl(${h} 65% 62%)"/><circle cx="16" cy="26" r="13" fill="#f5a623" stroke="#b9780f" stroke-width="1.500"/><circle cx="16" cy="26" r="9.500" fill="#ffc94d"/><path d="M16 18.500l2.200 4.800 5.200.6-3.900 3.500 1.100 5.100L16 29.900l-4.600 2.600 1.100-5.100-3.900-3.500 5.200-.6Z" fill="#fff6d8"/></svg></span>`};
 const progressOf=p=>p.done?100:(p.deliverables||[]).length?Math.round(100*p.deliverables.filter(d=>d.done).length/p.deliverables.length):p.progress||0;
 function badgeShelf(id){
-  const b=badgesOf(id);
-  return `<div class="shelf"><div class="pd-h">Badges · ${b.length}</div>${b.length?`<div class="bd-row">${b.map(p=>`<span class="bd">${medal(p,38)}<span class="ell">${esc(p.name)}</span></span>`).join('')}</div>`:'<p class="hint" style="margin:6px 0 0">No badges yet. Finish a project to earn one.</p>'}</div>`;
+  const b=badgesOf(id),pres=ui.level==='president',rem=pres?removedBadges(id):[];
+  return `<div class="shelf"><div class="pd-h">Badges \u00B7 ${b.length}</div>${b.length?`<div class="bd-row">${b.map(p=>`<span class="bd">${medal(p,38)}<span class="ell">${esc(p.name)}</span>${pres?`<button type="button" class="bd-x" data-act="bdgdel" data-pid="${p.id}" data-id="${id}" title="Remove this badge" aria-label="Remove badge ${esc(p.name)}">\u00D7</button>`:''}</span>`).join('')}</div>`:'<p class="hint" style="margin:6px 0 0">No badges yet. Finish a project to earn one.</p>'}${rem.length?`<div class="bd-rem">Removed:${rem.map(p=>`<button type="button" data-act="bdgrestore" data-pid="${p.id}" data-id="${id}" title="Give this badge back">Undo \u00B7 ${esc(p.name)}</button>`).join('')}</div>`:''}</div>`;
 }
 function deployBoxHTML(id){const ps=projects().filter(p=>!p.done);
   return `<div class="deploy-box"><b>Deploy to projects</b>${ps.length?ps.map(p=>{const on=(p.members||[]).includes(id);return `<button type="button" class="dp-opt${on?' on':''}" data-act="deploytoggle" data-pid="${p.id}" data-id="${id}"><i style="background:${projColor(p.id)}"></i><span>${esc(p.name)}</span><em>${on?'Deployed \u2713':'Deploy'}</em></button>`}).join(''):'<p class="hint" style="margin:0">No active projects yet.</p>'}<span class="hint">A person can be on several projects at once and will walk between their sites.</span></div>`;
@@ -3332,6 +3344,7 @@ ${(()=>{const lk=f.look||(f.look=npcLook({},uid()));ensureLook(lk);const sw=(lab
     <div class="acts"><button class="btn primary">${st.chief?'Change Chief code':'Set Chief code'}</button></div></form></div>`}
     <div class="set-sec"><h4>What chiefs can do</h4><div class="perm-list">${Object.keys(PERM_DEF).map(k=>`<button type="button" class="perm${perms()[k]?' on':''}" role="switch" aria-checked="${!!perms()[k]}" data-act="permtoggle" data-k="${k}"><span class="perm-t"><b>${PERM_LABEL[k][0]}</b><em>${PERM_LABEL[k][1]}</em></span><i class="perm-sw"></i></button>`).join('')}</div></div>
     ${n?`<div class="pick"><p class="hint" style="margin:0">${n} sample items (departments, members, projects) are in the house.</p><div class="acts"><button class="btn danger${v.arm?' arm':''}" data-act="clearsample">${v.arm?'Click again to clear':'Clear sample data'}</button></div></div>`:''}
+    <div class="set-sec"><h4>Backup</h4><p class="hint" style="margin:0">Download everything (members, departments, projects, activity) as one file you can keep. Restore puts a downloaded file back, replacing items with the same name.</p><div class="acts"><button type="button" class="btn gold" data-act="backup">Download backup</button><label class="btn ghost" style="cursor:pointer">Restore from file<input id="restorefile" type="file" accept="application/json,.json" hidden></label></div></div>
     <div class="pick"><p class="hint" style="margin:0">Add A-HOUSE's six departments with their teams and room themes. Departments you already have are kept.</p><div class="acts"><button class="btn gold" data-act="installorg">Add A-HOUSE departments</button><button class="btn gold" data-act="installroster">Add current roster</button></div></div>`;
   }
   const _pp=overlay.querySelector('.panel'),_vk=v.k+'|'+(v.id||'')+'|'+(v.edit?1:0)+(v.detail?1:0),_pst=_pp&&overlay.dataset.vk===_vk?_pp.scrollTop:0;
@@ -3356,6 +3369,7 @@ function pull(){ // copy form fields into the draft so re-renders keep typing
   if(v.k==='dept'&&g('d-name'))Object.assign(v.draft,{name:g('d-name').value,order:+g('d-order').value,theme:g('d-theme').value});
 }
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('ahouse:'+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function toastUndo(t,fn){const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.append(t);const u=document.createElement('button');u.type='button';u.className='tu';u.textContent='Undo';u.onclick=()=>{el.remove();fn()};el.append(u);document.body.append(el);setTimeout(()=>el.remove(),9000)}
 function toast(t){const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.textContent=t;document.body.append(el);setTimeout(()=>el.remove(),2600)}
 const close=()=>{ui.view=null;renderView()};
 const GATED=['newmember','newproject','newdept','editdept','settings'];
@@ -3395,6 +3409,13 @@ document.addEventListener('click',async e=>{
   if(a==='deploypick'){if(!ui.unlocked||!can('members'))return toast(NO_CHIEF);v.deploy=!v.deploy;return renderView()}
   if(a==='deploytoggle'){if(!ui.unlocked||!can('members'))return toast(NO_CHIEF);const pid=b.dataset.pid,id=b.dataset.id,pj=st.projects[pid];if(!pj)return;
     if((pj.members||[]).includes(id))await orgRemove(pid,id);else await mmReparent(pid,id,'root');return renderView()}
+  if(a==='bdgdel'||a==='bdgrestore'){if(ui.level!=='president')return toast('Only the President can change badges.');
+    const pid=b.dataset.pid,mid=b.dataset.id,pp=st.projects[pid];if(!pp)return;
+    const set=(add)=>save(()=>api.upd('projects',pid,{revoked:add?[...(st.projects[pid].revoked||[]).filter(x=>x!==mid),mid]:(st.projects[pid].revoked||[]).filter(x=>x!==mid)})).then(ok=>{if(ok){renderView();render()}return ok});
+    if(a==='bdgdel'){if(await set(true))toastUndo('Badge removed',()=>{set(false)});return}
+    if(await set(false))toast('Badge given back');return}
+  if(a==='backup'){if(ui.level!=='president')return;const data={app:'a-house-hq',saved:new Date().toISOString(),depts:st.depts,members:st.members,projects:st.projects,activity:st.activity,perms:st.perms||null};
+    const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'}));const el=document.createElement('a');el.href=url;el.download='a-house-backup-'+today()+'.json';document.body.append(el);el.click();el.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);return toast('Backup downloaded')}
   if(a==='flaglow'||a==='flagaway'){if(!can('members'))return toast(NO_CHIEF);const id=b.dataset.id,m=st.members[id];if(!m)return;const k=a==='flaglow'?'low':'away';
     await save(()=>api.upd('members',id,{[k]:!m[k]}),k==='low'?(m.low?'Low activity cleared':'Marked low activity'):(m.away?'Back from leave':'Marked on leave'));return renderView()}
   if(a==='tlproj'){ui.tlproj=b.dataset.id;return render()}
@@ -3674,7 +3695,8 @@ if(location.hash==='#roster'){ui.tab='roster';document.querySelectorAll('[data-a
 const tick=()=>{clock.textContent=new Date().toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})};
 tick();setInterval(tick,30000);setInterval(()=>{if(!ui.view)render()},60000);
 /* re-draw the member preview when department, stars or hairstyle change */
-document.addEventListener('change',e=>{const tk=e.target.closest?.('[data-tk]');if(tk)return taskEdit(tk,e.target);if(e.target.id==='t-proj'){ui.tproj=e.target.value;return renderTasks()}if(COLORKEY[e.target.id]){pull();ui.view.draft.look[COLORKEY[e.target.id]]=e.target.value;return renderView()}if(e.target.id==='m-photo'){pull();return loadPhoto(e.target.files[0])}if(e.target.id==='rsort'){ui.rsort=e.target.value;return render()}if(['m-dept','m-stars','m-gender','m-hair','m-outfit','m-body','m-eyes','m-beard','m-legs','m-acc'].includes(e.target.id)){pull();if(e.target.id==='m-dept')ui.view.draft.team='';renderView()}});
+document.addEventListener('change',async e=>{if(e.target.id==='restorefile'){const f=e.target.files[0];e.target.value='';if(!f||ui.level!=='president')return;try{const d=JSON.parse(await f.text());if(d.app!=='a-house-hq')throw 0;const n=['depts','members','projects','activity'].reduce((t,c)=>t+Object.keys(d[c]||{}).length,0);if(!confirm('Restore '+n+' items from this backup? Items with the same name are replaced.'))return;if(await save(async()=>{for(const c of ['depts','members','projects','activity'])for(const [id,v] of Object.entries(d[c]||{}))await api.set(c,id,v);if(d.perms)await api.set('access','perms',d.perms)},'Backup restored'))render()}catch{toast('That file is not an A-HOUSE backup.')}return}
+  const tk=e.target.closest?.('[data-tk]');if(tk)return taskEdit(tk,e.target);if(e.target.id==='t-proj'){ui.tproj=e.target.value;return renderTasks()}if(COLORKEY[e.target.id]){pull();ui.view.draft.look[COLORKEY[e.target.id]]=e.target.value;return renderView()}if(e.target.id==='m-photo'){pull();return loadPhoto(e.target.files[0])}if(e.target.id==='rsort'){ui.rsort=e.target.value;return render()}if(['m-dept','m-stars','m-gender','m-hair','m-outfit','m-body','m-eyes','m-beard','m-legs','m-acc'].includes(e.target.id)){pull();if(e.target.id==='m-dept')ui.view.draft.team='';renderView()}});
 let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(fit,100)}).observe(map);
 boot();requestAnimationFrame(frame);
 
