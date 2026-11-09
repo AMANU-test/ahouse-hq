@@ -1440,6 +1440,29 @@ input:not([type=checkbox]):not([type=range]):focus,textarea:focus,select:focus{o
 .bd-x{position:absolute;right:-2px;top:-4px;width:20px;height:20px;border-radius:50%;border:2px solid #fff;background:#d6455d;color:#fff;font:900 13px/1 var(--body);padding:0;cursor:pointer;display:grid;place-items:center;box-shadow:0 1px 4px #0006}
 .bd-rem{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font:700 12px var(--body);color:var(--mute)}
 .bd-rem button{border:1px dashed #ffffff66;background:transparent;color:inherit;border-radius:99px;padding:3px 9px;font:700 12px var(--body);cursor:pointer}
+
+/* v55: directory view + badge history */
+.dtbl{width:100%;border-collapse:separate;border-spacing:0;font:700 13px var(--body);min-width:760px;color:inherit}
+.dtbl th{position:sticky;top:0;z-index:2;text-align:left;font:800 12px var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--mute);padding:8px 10px;background:#0f1b33;border-bottom:2px solid #ffffff2e;white-space:nowrap}
+.dtbl td{padding:7px 10px;border-bottom:1px solid #ffffff1c;border-right:1px solid #ffffff10;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.dtbl tr.dgrp td{background:color-mix(in srgb,var(--dc) 38%,#0f1b33);font:900 13px var(--body);letter-spacing:.03em;color:#fff;border-bottom:0;padding:7px 10px}
+.dtbl tr.dgrp small{font-weight:700;opacity:.8;margin-left:8px}
+.dtbl td a{color:#9cc6ff;text-decoration:none}.dtbl td a:hover{text-decoration:underline}
+.dtbl td.dir-miss{color:#ff9d9d;background:#ff6b6b14;text-align:center}
+.dtbl .who{display:inline-flex;align-items:center;gap:8px;border:0;background:none;color:inherit;font:inherit;cursor:pointer;padding:0}
+.dtbl .who:hover{text-decoration:underline}
+.dir-top{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 10px;font:700 13px var(--body);color:var(--mute)}
+.dir-top b{color:#fff}.dir-top .m{color:#ff9d9d}
+.bd-plus{width:38px;height:38px;border-radius:50%;border:2px dashed #ffffff66;background:transparent;color:#fff;font:700 22px/1 var(--body);cursor:pointer;align-self:flex-start;display:grid;place-items:center}
+.bd-plus[aria-expanded=true]{background:#ffffff1f}
+.bd-hist{margin-top:10px;border:1px solid #ffffff24;border-radius:12px;overflow:hidden}
+.bd-hist h5{margin:0;padding:8px 12px;font:800 12px var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--mute);background:#ffffff0d}
+.bdh-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 12px;border-top:1px solid #ffffff1c;font:700 13px var(--body)}
+.bdh-row .nm2{flex:1 1 140px;min-width:0}.bdh-row small{display:block;font-weight:700;color:var(--mute)}
+.bdh-row.off .nm2{opacity:.6;text-decoration:line-through}
+.bdh-row button{border:1px solid #ffffff44;background:transparent;color:inherit;border-radius:99px;padding:4px 10px;font:800 12px var(--body);cursor:pointer}
+.bdh-row button.on{background:#d6455d;border-color:#d6455d;color:#fff}
+.bdh-row button:disabled{opacity:.35;cursor:default}
 .toast .tu{margin-left:12px;border:0;border-radius:8px;background:var(--ah-orange,#f08a2c);color:#fff;font:900 13px var(--body);padding:5px 12px;cursor:pointer}
 
 /* v53: sign-in gate for the GitHub Pages (Supabase) version */
@@ -2384,16 +2407,17 @@ const TILES={camp:'data:image/webp;base64,UklGRtQ9AABXRUJQVlA4WAoAAAAQAAAARwMA/Q
 /* ---------- badges: every finished project earns its crew a badge, nothing extra to enter ---------- */
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const onTime=p=>!p.due||!p.finished||p.finished<=p.due; // projects finished before dates were recorded count as on time
-const badgesOf=mid=>Object.entries(st.projects).filter(([,p])=>p.done&&(p.members||[]).includes(mid)&&!(p.revoked||[]).includes(mid)).map(([id,p])=>({id,...p})).sort((a,b)=>(a.finished||'').localeCompare(b.finished||''));
+const badgesOf=mid=>Object.entries(st.projects).filter(([,p])=>p.done&&(p.members||[]).includes(mid)&&!p.nobadge&&!(p.revoked||[]).includes(mid)).map(([id,p])=>({id,...p})).sort((a,b)=>(a.finished||'').localeCompare(b.finished||''));
 const bdgN=mid=>badgesOf(mid).length;
-const removedBadges=mid=>Object.entries(st.projects).filter(([,p])=>p.done&&(p.members||[]).includes(mid)&&(p.revoked||[]).includes(mid)).map(([id,p])=>({id,...p}));
+const doneProjectsOf=mid=>Object.entries(st.projects).filter(([,p])=>p.done&&(p.members||[]).includes(mid)).map(([id,p])=>({id,...p})).sort((a,b)=>(b.finished||'').localeCompare(a.finished||''));
 const MM='<svg class="mdl" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5a623"/><path d="M8 3.200l1.400 3 3.200.4-2.400 2.200.7 3.200L8 10.400 5.100 12l.7-3.200L3.400 6.600l3.200-.4Z" fill="#fff6d8"/></svg>';
 const bdgChip=mid=>{const n=bdgN(mid);return n?`<span class="hc-lv" title="${n} project badge${n>1?'s':''}">${MM}${n}</span>`:''};
 const medal=(p,sz=30)=>{const h=hue((p.name||'')+'!');return `<span class="medal" style="--ms:${sz}px" title="${esc(p.name)}: project completed"><svg viewBox="0 0 32 40" aria-hidden="true"><path d="M8 0h6l3 14-8 2Z" style="fill:hsl(${h} 60% 48%)"/><path d="M24 0h-6l-3 14 8 2Z" style="fill:hsl(${h} 65% 62%)"/><circle cx="16" cy="26" r="13" fill="#f5a623" stroke="#b9780f" stroke-width="1.500"/><circle cx="16" cy="26" r="9.500" fill="#ffc94d"/><path d="M16 18.500l2.200 4.800 5.200.6-3.900 3.500 1.100 5.100L16 29.900l-4.600 2.600 1.100-5.100-3.900-3.500 5.200-.6Z" fill="#fff6d8"/></svg></span>`};
 const progressOf=p=>p.done?100:(p.deliverables||[]).length?Math.round(100*p.deliverables.filter(d=>d.done).length/p.deliverables.length):p.progress||0;
 function badgeShelf(id){
-  const b=badgesOf(id),pres=ui.level==='president',rem=pres?removedBadges(id):[];
-  return `<div class="shelf"><div class="pd-h">Badges \u00B7 ${b.length}</div>${b.length?`<div class="bd-row">${b.map(p=>`<span class="bd">${medal(p,38)}<span class="ell">${esc(p.name)}</span>${pres?`<button type="button" class="bd-x" data-act="bdgdel" data-pid="${p.id}" data-id="${id}" title="Remove this badge" aria-label="Remove badge ${esc(p.name)}">\u00D7</button>`:''}</span>`).join('')}</div>`:'<p class="hint" style="margin:6px 0 0">No badges yet. Finish a project to earn one.</p>'}${rem.length?`<div class="bd-rem">Removed:${rem.map(p=>`<button type="button" data-act="bdgrestore" data-pid="${p.id}" data-id="${id}" title="Give this badge back">Undo \u00B7 ${esc(p.name)}</button>`).join('')}</div>`:''}</div>`;
+  const b=badgesOf(id),pres=ui.level==='president',open=pres&&ui.bdgHist===id;
+  const hist=open?`<div class="bd-hist"><h5>Completed projects</h5>${doneProjectsOf(id).map(p=>{const rv=(p.revoked||[]).includes(id),off=p.nobadge||rv;return `<div class="bdh-row${off?' off':''}"><span class="nm2">${esc(p.name)}<small>${p.finished?'Finished '+esc(p.finished):'Completed'}${p.nobadge?' \u00B7 badge hidden for everyone':''}</small></span><button type="button" class="${rv?'':'on'}" data-act="${rv?'bdgrestore':'bdgdel'}" data-pid="${p.id}" data-id="${id}"${p.nobadge&&!rv?' disabled':''}>${rv?'Give back':'Remove'}</button><button type="button" data-act="bdgall" data-pid="${p.id}" data-id="${id}">${p.nobadge?'Show for everyone':'Hide for everyone'}</button></div>`}).join('')||'<div class="bdh-row">No completed projects yet.</div>'}</div>`:'';
+  return `<div class="shelf"><div class="pd-h">Badges \u00B7 ${b.length}</div><div class="bd-row">${b.map(p=>`<span class="bd">${medal(p,38)}<span class="ell">${esc(p.name)}</span>${pres?`<button type="button" class="bd-x" data-act="bdgdel" data-pid="${p.id}" data-id="${id}" title="Remove this badge" aria-label="Remove badge ${esc(p.name)}">\u00D7</button>`:''}</span>`).join('')}${pres?`<button type="button" class="bd-plus" data-act="bdghist" data-id="${id}" aria-expanded="${open}" title="History of completed projects">${open?'\u2212':'+'}</button>`:''}</div>${b.length||pres?'':'<p class="hint" style="margin:6px 0 0">No badges yet. Finish a project to earn one.</p>'}${hist}</div>`;
 }
 function deployBoxHTML(id){const ps=projects().filter(p=>!p.done);
   return `<div class="deploy-box"><b>Deploy to projects</b>${ps.length?ps.map(p=>{const on=(p.members||[]).includes(id);return `<button type="button" class="dp-opt${on?' on':''}" data-act="deploytoggle" data-pid="${p.id}" data-id="${id}"><i style="background:${projColor(p.id)}"></i><span>${esc(p.name)}</span><em>${on?'Deployed \u2713':'Deploy'}</em></button>`}).join(''):'<p class="hint" style="margin:0">No active projects yet.</p>'}<span class="hint">A person can be on several projects at once and will walk between their sites.</span></div>`;
@@ -2513,6 +2537,22 @@ function execDeskHTML(){
     <textarea id="tg-text" readonly rows="${Math.min(18,txt.split('\n').length+1)}" aria-label="Deliverables list for Telegram">${esc(txt)}</textarea>
     <div class="acts"><button type="button" class="btn primary" data-act="tgcopy">Copy for Telegram</button><span class="hint">Each line: deliverable — c/o @handle — notes, grouped like the board. Handles come from member profiles.</span></div></section>`;
 }
+const dirVal=(m,k)=>String(m[k]||'').trim();
+function dirGroups(list){return depts().map(d=>({n:d.name,c:d.color,l:list.filter(m=>m.dept===d.id)})).concat([{n:'Leadership',c:'#8b93a6',l:list.filter(m=>!st.depts[m.dept])}]).filter(g=>g.l.length).map(g=>({...g,l:g.l.slice().sort((a,b)=>(b.stars||2)-(a.stars||2)||a.name.localeCompare(b.name))}))}
+const DIRF=[['email','Email'],['telegram','Telegram'],['phone','Phone'],['course','Course']];
+function dirHTML(list){
+  const gs=dirGroups(list),miss=k=>list.filter(m=>!dirVal(m,k)).length;
+  const cell=(m,k)=>{const v=dirVal(m,k);if(!v)return '<td class="dir-miss" title="Not added yet">\u2014</td>';
+    if(k==='email')return `<td><a href="mailto:${esc(v)}">${esc(v)}</a></td>`;
+    if(k==='telegram'){const h=v.replace(/^@/,'');return `<td><a href="https://t.me/${esc(h)}" target="_blank" rel="noopener noreferrer">@${esc(h)}</a></td>`}
+    return `<td title="${esc(v)}">${esc(v)}</td>`};
+  const head=`<div class="dir-top"><b>${list.length} member${list.length===1?'':'s'}</b>${DIRF.map(([k,l])=>`<span class="${miss(k)?'m':''}">${miss(k)} without ${l.toLowerCase()}</span>`).join('')}<button type="button" class="btn gold" data-act="dircopy">Copy for Google Sheets</button></div>`;
+  const rows=gs.map(g=>`<tr class="dgrp" style="--dc:${g.c}"><td colspan="${DIRF.length+4}">${esc(g.n)}<small>${g.l.length}</small></td></tr>`+g.l.map(m=>`<tr><td><button type="button" class="who" data-act="member" data-id="${m.id}">${figure(m,m.id,true)}${esc(m.name)}</button></td><td>${esc(m.title||TIERS[m.stars||2])}</td>${DIRF.map(([k])=>cell(m,k)).join('')}<td>${esc(SL[statusOf(m.id,m)])}</td><td>${bdgN(m.id)||''}</td></tr>`).join('')).join('');
+  return `${head}<div class="tblwrap"><table class="dtbl"><thead><tr><th>Name</th><th>Role</th>${DIRF.map(([,l])=>`<th>${l}</th>`).join('')}<th>Status</th><th>Badges</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function dirTSV(){const q=ui.q.toLowerCase(),rd=ui.rdept||'all';const list=Object.entries(st.members).map(([id,m])=>({id,...m})).filter(m=>(rd==='all'||m.dept===rd)&&(!q||(m.name+' '+(m.title||'')).toLowerCase().includes(q)));
+  const L=[['Department','Name','Role',...DIRF.map(x=>x[1]),'Status'].join('\t')];
+  dirGroups(list).forEach(g=>g.l.forEach(m=>L.push([g.n,m.name,m.title||TIERS[m.stars||2],...DIRF.map(([k])=>dirVal(m,k).replace(/[\t\n]/g,' ')),SL[statusOf(m.id,m)]].join('\t'))));return L.join('\n')}
 function renderRoster(ms){
   const q=ui.q.toLowerCase(),rd=ui.rdept||'all',sort=ui.rsort||'dept';
   let list=ms.filter(m=>(rd==='all'||m.dept===rd)&&fmatch(m,statusOf(m.id,m))&&(!q||(m.name+' '+(m.task||'')+' '+(m.title||'')).toLowerCase().includes(q)));
@@ -2535,11 +2575,11 @@ function renderRoster(ms){
         <button class="dchip" data-act="rdept" data-v="all" aria-pressed="${rd==='all'}" style="--c:#22304a"><i></i>All departments</button>
         ${depts().map(d=>`<button class="dchip" data-act="rdept" data-v="${d.id}" aria-pressed="${rd===d.id}" style="--c:${d.color}"><i></i>${esc(d.name)}</button>`).join('')}
       </div>
-      <div class="seg" role="group" aria-label="Roster layout"><button data-act="rview" data-v="cards" aria-pressed="${!statsView}">Cards</button><button data-act="rview" data-v="stats" aria-pressed="${!!statsView}">Stats</button></div>
+      <div class="seg" role="group" aria-label="Roster layout"><button data-act="rview" data-v="cards" aria-pressed="${!statsView}">Cards</button><button data-act="rview" data-v="dir" aria-pressed="${!!statsView}">Directory</button></div>
       <span class="r-tools">${editToolsHTML()}</span>
       <label class="r-sort">Sort<select id="rsort">${[['dept','Department'],['free','Free first']].map(([v,l])=>`<option value="${v}"${v===sort?' selected':''}>${l}</option>`).join('')}</select></label>
     </div>
-    <div class="r-body">${statsView&&list.length?`<div class="tblwrap"><table class="stbl"><thead><tr><th>Member</th><th>Dept</th><th>Badges</th><th>On time</th><th>Active</th><th>Tasks</th></tr></thead><tbody>${list.map(m=>{const t=statsOf(m.id),d=st.depts[m.dept];return `<tr data-act="member" data-id="${m.id}"><td><span class="who">${figure(m,m.id,true)}${esc(m.name)}</span></td><td>${esc(d?.name||'Leadership')}</td><td>${t.done}</td><td>${t.ontime===null?'–':t.ontime+'%'}</td><td>${t.active}</td><td>${t.tasksDone}/${t.tasks}</td></tr>`}).join('')}</tbody></table></div>`:!list.length?`<div class="blank"><h2>No one matches</h2><p class="hint">Try another department or filter.</p></div>`
+    <div class="r-body">${statsView&&list.length?dirHTML(list)
       :groups.map(([k,lab,g,col])=>`${k?`<div class="r-sec ${k}"${col?` style="--sc:${col}"`:''}><i></i><b>${esc(lab)}</b> ${g.length}</div>`:''}<div class="r-grid">${g.map(card).join('')}</div>`).join('')}</div>`;
 }
 
@@ -3409,6 +3449,9 @@ document.addEventListener('click',async e=>{
   if(a==='deploypick'){if(!ui.unlocked||!can('members'))return toast(NO_CHIEF);v.deploy=!v.deploy;return renderView()}
   if(a==='deploytoggle'){if(!ui.unlocked||!can('members'))return toast(NO_CHIEF);const pid=b.dataset.pid,id=b.dataset.id,pj=st.projects[pid];if(!pj)return;
     if((pj.members||[]).includes(id))await orgRemove(pid,id);else await mmReparent(pid,id,'root');return renderView()}
+  if(a==='bdghist'){if(ui.level!=='president')return;ui.bdgHist=ui.bdgHist===b.dataset.id?null:b.dataset.id;return renderView()}
+  if(a==='bdgall'){if(ui.level!=='president')return;const pid=b.dataset.pid,pp=st.projects[pid];if(!pp)return;const was=!!pp.nobadge;
+    if(await save(()=>api.upd('projects',pid,{nobadge:!was}))){renderView();render();toastUndo(was?'Badge shown again for everyone':'Badge hidden for everyone',()=>{save(()=>api.upd('projects',pid,{nobadge:was})).then(()=>{renderView();render()})})}return}
   if(a==='bdgdel'||a==='bdgrestore'){if(ui.level!=='president')return toast('Only the President can change badges.');
     const pid=b.dataset.pid,mid=b.dataset.id,pp=st.projects[pid];if(!pp)return;
     const set=(add)=>save(()=>api.upd('projects',pid,{revoked:add?[...(st.projects[pid].revoked||[]).filter(x=>x!==mid),mid]:(st.projects[pid].revoked||[]).filter(x=>x!==mid)})).then(ok=>{if(ok){renderView();render()}return ok});
@@ -3525,7 +3568,8 @@ document.addEventListener('click',async e=>{
   if(a==='rmphoto'){v.draft.photo='';return renderView()}
   if(a==='animal'){v.draft.animal=+b.dataset.v;v.draft.photo='';return renderView()}
   if(a==='editmember'){if(!ui.unlocked){ui.after=['editmember',{...b.dataset}];return open('lock')}if(!can('members'))return toast(NO_CHIEF);return open('member',b.dataset.id,'edit')}
-  if(a==='rview'){ui.rstats=b.dataset.v==='stats';return render()}
+  if(a==='rview'){ui.rstats=b.dataset.v==='dir';return render()}
+  if(a==='dircopy'){const t=dirTSV();try{await navigator.clipboard.writeText(t)}catch{const ta=document.createElement('textarea');ta.value=t;document.body.append(ta);ta.select();try{document.execCommand('copy')}catch{}ta.remove()}return toast('Copied. Paste it into Google Sheets.')}
   if(a==='installroster'){close();await save(addRoster,'Roster added')}
   if(a==='installorg'){close();await save(addOrg,'A-HOUSE departments added')}
 });
