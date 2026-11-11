@@ -1535,6 +1535,23 @@ input:not([type=checkbox]):not([type=range]):focus,textarea:focus,select:focus{o
 .cb-snap{position:absolute;z-index:99998;pointer-events:none;background:#ffd24a99}.cb-snap.bad{background:#ff5a4fa0}
 @media (prefers-reduced-motion:reduce){.cb-flag{animation:none}}
 /* BASES-CSS:END */
+
+/* ===== avatars: members drawn from the avatar kit. Each frame is its own size, so the sheet is shown at its real pixel size
+   and the whole figure is scaled 1.5x around its feet (1 art pixel = 1.5 css px, the same as the offices), nearest-neighbour. ===== */
+.avs{--fw:27;--fh:30;--n:8;--rows:4;--ax:13;--ay:26;--fps:8;--row:0;position:absolute;left:calc(50% - var(--ax)*1px);top:calc(100% - 2px - var(--ay)*1px);
+  width:calc(var(--fw)*1px);height:calc(var(--fh)*1px);background-repeat:no-repeat;background-size:calc(var(--n)*var(--fw)*1px) calc(var(--rows)*var(--fh)*1px);
+  background-position-x:0;background-position-y:calc(var(--row)*var(--fh)*-1px);image-rendering:pixelated;
+  transform:scale(1.5);transform-origin:calc(var(--ax)*1px) calc(var(--ay)*1px);animation:avp calc(var(--n)/var(--fps)*1s) steps(var(--n)) infinite;pointer-events:none}
+@keyframes avp{to{background-position-x:calc(var(--n)*var(--fw)*-1px)}}
+.avs.a-idle,.avs.a-sit{--fps:6}
+.avs.a-work{--fw:29;--ax:14}
+.avs.a-sleep{--fw:41;--fh:47;--rows:3;--ax:20;--ay:35;--fps:4}
+.avs.r-0{--row:0}.avs.r-1{--row:1}.avs.r-2{--row:2}.avs.r-3{--row:3}
+.rw .tok.pin:hover .avs{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff)}
+.tok.low .avs{filter:saturate(.85)}
+.look-prev .avs{left:calc(50% - 13px);top:calc(100% - 12px - 26px);transform:scale(2.8)}
+#m-avatar{width:100%;box-sizing:border-box;resize:vertical}
+@media (prefers-reduced-motion:reduce){.avs{animation:none!important}}
 </style>
 
 <div class="app">
@@ -2405,7 +2422,7 @@ function pinHTML(m,pos,zone,wd){ensureLook(npcLook(m,m.id));
   const dim=!fmatch(m,s)||(q&&!hit),tag=stText(s,act,m.id),[X,Y]=scr(pos.x,pos.y,pos.z||0);
   return `<button class="tok pin s${m.stars||2} ${s}${dim?' dim':''}${hit?' hit':''}" data-act="member" data-id="${m.id}" data-st="${s}"${zone?` data-zone="${zone}"`:''}${wd?` data-wr="${wd.r}" data-wb="${wd.x0},${wd.x1},${wd.y0},${wd.y1}"${wd.k?` data-wk="${wd.k}|${ROOM.W}|${ROOM.H}"`:''} data-wp="${(pos.x*ROOM.W).toFixed(1)},${(pos.y*ROOM.H).toFixed(1)}"`:''} ${ui.unlocked?'draggable="true"':''} title="${esc(m.name+' · '+(m.title||TIERS[m.stars||2])+' · '+tag)}" aria-label="${esc(m.name+', '+tag)}" style="left:${X.toFixed(1)}px;top:${Y.toFixed(1)}px;z-index:${10+Math.round(Y)};--dc:${deptColor(m.dept)};--pc:${(s==='busy'||s==='dep')&&act[0]?projColor(act[0].id):'transparent'};--bd:-${((hashStr(m.id)%12)/10).toFixed(1)}s">
     <span class="nm"><i class="sd"></i>${(s==='busy'||s==='dep')?act.map(p=>`<i class="pjd" style="background:${projColor(p.id)}"></i>`).join(''):''}${esc(m.name.split(' ')[0])}</span>
-    <span class="pin-b"><i class="pin-ring"></i><span class="spr ${npcLook(m,m.id).b} lk-${npcKey(npcLook(m,m.id))} c-${s==='busy'?'idle_up':'idle_down'}"></span><i class="pin-st">${ICONS[s]}</i>${pos.sleep?'<span class="zzz"><i>z</i><i>z</i><i>Z</i></span>':''}</span></button>`;
+    <span class="pin-b"><i class="pin-ring"></i>${pinSpr(m,s,pos)}<i class="pin-st">${ICONS[s]}</i>${pos.sleep&&!AVON?'<span class="zzz"><i>z</i><i>z</i><i>Z</i></span>':''}</span></button>`;
 }
 function token(m,desk,cid,bed,zone){
   const s=statusOf(m.id,m),act=activeOf(m.id);
@@ -2837,7 +2854,7 @@ function roomHTML(kind,id,left,top,tile,crew,signHTML,wall,dc,th,rd){
   const out=`<div class="rw ${kind}${ui.sel===kind+id?' sel':''}${ui.hl===kind+':'+id?' hl':''}" data-drop="${kind}" data-id="${id}" style="left:${left}px;top:${top}px;z-index:${top+1000}${big?`;--vw:${vt.w}px;--vh:${vt.h}px`:''}">
     ${rd?`<img class="tile rt" src="${rd.url}" alt="" draggable="false" style="left:${(TOX-rd.tox).toFixed(2)}px;top:${(TOY-rd.toy).toFixed(2)}px;width:${rd.tw}px;height:${rd.th}px">${rd.anim?animHTML(rd.anim):''}`:tile?`<img class="tile" src="${TILES[big?'venue'+vt.i:tile]}" alt="" draggable="false">`:''}
     ${big?vp.desks.map(d=>{const [x,y]=tz(d.u,d.v),zf=9+Math.round(tz(d.u+23,d.v+24)[1]);return `<img class="dsk2" src="${TILES.desk2}" alt="" draggable="false" style="left:${(x-5.25).toFixed(1)}px;top:${(y-39.49).toFixed(1)}px;width:60.0px;height:49.5px;z-index:${zf}">`}).join(''):''}
-    ${(big?vp.beds.size:bedList.length)?bedsSVG(big?[...vp.beds.values()]:bedList,big?vt.w:TW,big?vt.h:TH):''}
+    ${(()=>{const bl=AVON?(big?[]:bedList.slice(sleepers.length)):(big?[...vp.beds.values()]:bedList);return bl.length?bedsSVG(bl,big?vt.w:TW,big?vt.h:TH):''})()}
     <svg class="hlsvg" aria-hidden="true"><polygon points="${[tz(0,0),tz(RW_,0),tz(RW_,RH_),tz(0,RH_)].map(q=>q[0].toFixed(0)+','+q[1].toFixed(0)).join(' ')}"/></svg>
     ${hits}${zl}
     ${pins}${chip}
@@ -3490,8 +3507,7 @@ function renderView(){
         <label class="f">Name<input id="m-name" required value="${esc(f.name)}"></label>
         <div class="f">Profile picture<div class="photorow"><span class="av-prev" style="background-image:url(${f.photo?pixURL(f.photo):ANIMAL_URL[f.animal]})"></span><div class="pick"><input id="m-photo" type="file" accept="image/*" aria-label="Upload a photo">${f.photo?`<button type="button" class="btn ghost" data-act="rmphoto">Remove photo</button>`:''}<span class="hint" style="font-weight:400">Upload a photo, then drag and zoom it into place. It always becomes pixel art. Or pick an animal below.</span></div></div>
           <div class="animals" role="group" aria-label="Default animal">${ANIMALS.map((an,i)=>`<button type="button" class="an${!f.photo&&i===f.animal?' on':''}" data-act="animal" data-v="${i}" title="${an[0]}" aria-label="${an[0]}" style="background-image:url(${ANIMAL_URL[i]})"></button>`).join('')}</div></div>
-${(()=>{const lk=f.look||(f.look=npcLook({},uid()));ensureLook(lk);const sw=(lab,k,cols)=>`<div class="lk-row"><b>${lab}</b><span>${cols.map((c,i)=>`<button type="button" class="sw${lk[k]===i?' on':''}" data-act="lookset" data-k="${k}" data-v="${i}" style="background:${c}" aria-label="${lab} ${i+1}"></button>`).join('')}</span></div>`;
-          return `<div class="f">Character look<div class="lookrow"><span class="look-prev"><span class="spr ${lk.b} lk-${npcKey(lk)} c-walk_down"></span></span><div class="pick"><div class="seg"><button type="button" class="${lk.b==='m'?'on':''}" data-act="lookset" data-k="b" data-v="m">Man</button><button type="button" class="${lk.b==='f'?'on':''}" data-act="lookset" data-k="b" data-v="f">Woman</button><button type="button" class="btn ghost" data-act="lookrand">Randomise</button></div>${sw('Skin','skin',LK_SKINS.map(t=>t[1]))}${sw('Hair','hair',LK_HAIRS)}${sw(lk.b==='m'?'Vest':'Dress','top',LK_OUTFITS)}${sw(lk.b==='m'?'Shirt':'Apron','under',LK_UNDERS)}</div></div></div>`})()}
+${avEditorHTML(f)}
         <div class="row"><label class="f">Department<select id="m-dept"><option value=""${f.dept?'':' selected'}>None (leadership)</option>${depts().map(d=>`<option value="${d.id}"${d.id===f.dept?' selected':''}>${esc(d.name)}</option>`).join('')}</select></label>
         <label class="f">Star level<select id="m-stars">${[6,5,4,3,2].map(s=>`<option value="${s}"${s==f.stars?' selected':''}>${'★'.repeat(s)} ${TIERS[s]}</option>`).join('')}</select></label></div>
         <label class="f">Role<input id="m-title" value="${esc(f.title)}" placeholder="e.g. Logistics Head, Graphic Designer"></label>
@@ -3567,14 +3583,14 @@ ${(()=>{const lk=f.look||(f.look=npcLook({},uid()));ensureLook(lk);const sw=(lab
 }
 function open(k,id,extra){
   if(k==='lock'&&ui.sb){toast('Only the President and Chiefs can do that.');return}
-  const base={member:()=>{const m=st.members[id]||{};return{look:npcLook(m,id||uid()),name:m.name||'',dept:id?(m.dept||''):(extra||depts()[0]?.id),photo:m.photo||'',animal:Number.isInteger(m.animal)?m.animal:(id?animalOf(m,id):Math.floor(Math.random()*ANIMALS.length)),stars:m.stars||2,title:m.title||'',telegram:m.telegram||'',email:m.email||'',pemail:m.pemail||'',phone:m.phone||'',course:m.course||'',notes:m.notes||'',task:m.task||'',away:!!m.away,low:!!m.low}},
+  const base={member:()=>{const m=st.members[id]||{};return{avText:m.avatar?JSON.stringify(m.avatar):'',look:npcLook(m,id||uid()),name:m.name||'',dept:id?(m.dept||''):(extra||depts()[0]?.id),photo:m.photo||'',animal:Number.isInteger(m.animal)?m.animal:(id?animalOf(m,id):Math.floor(Math.random()*ANIMALS.length)),stars:m.stars||2,title:m.title||'',telegram:m.telegram||'',email:m.email||'',pemail:m.pemail||'',phone:m.phone||'',course:m.course||'',notes:m.notes||'',task:m.task||'',away:!!m.away,low:!!m.low}},
     project:()=>{const p=st.projects[id]||{};return{name:p.name||'',desc:p.desc||'',due:p.due||'',start:p.start||'',progress:p.progress||0,done:!!p.done,members:[...(p.members||[])],lead:p.lead||'',deliverables:(p.deliverables||[]).map(x=>({...x}))}},
     dept:()=>{const d=st.depts[id]||{};return{name:d.name||'',color:d.color||DCOLORS[depts().length%DCOLORS.length],order:d.order??depts().length+1,theme:d.theme||''}}}[k];
   ui.view={k,id,draft:base?base():null,detail:k==='project'&&extra==='detail',edit:k==='member'&&(!id||extra==='edit')};renderView();
 }
 function pull(){ // copy form fields into the draft so re-renders keep typing
   const v=ui.view,g=id=>document.getElementById(id);if(!v?.draft)return;
-  if(v.k==='member'&&g('m-name')){Object.assign(v.draft,{name:g('m-name').value,dept:g('m-dept').value,stars:+g('m-stars').value,title:g('m-title').value,telegram:g('m-telegram').value,email:g('m-email').value,pemail:g('m-pemail').value,phone:g('m-phone').value,course:g('m-course').value,notes:g('m-notes').value,task:g('m-task').value,away:g('m-avail').value==='leave',low:g('m-avail').value==='low'})}
+  if(v.k==='member'&&g('m-name')){Object.assign(v.draft,{name:g('m-name').value,dept:g('m-dept').value,stars:+g('m-stars').value,title:g('m-title').value,telegram:g('m-telegram').value,email:g('m-email').value,pemail:g('m-pemail').value,phone:g('m-phone').value,course:g('m-course').value,notes:g('m-notes').value,task:g('m-task').value,away:g('m-avail').value==='leave',low:g('m-avail').value==='low'});if(g('m-avatar'))v.draft.avText=g('m-avatar').value}
   if(v.k==='project'&&g('p-name')){
     Object.assign(v.draft,{name:g('p-name').value,desc:g('p-desc').value,due:g('p-due').value,start:g('p-start')?g('p-start').value:v.draft.start,done:g('p-done')?g('p-done').checked:v.draft.done,lead:g('p-lead')?g('p-lead').value:v.draft.lead});if(g('p-prog'))v.draft.progress=+g('p-prog').value;
     document.querySelectorAll('.dl').forEach((r,i)=>{const d=v.draft.deliverables[i];if(d)Object.assign(d,{name:r.querySelector('.dl-name').value,start:r.querySelector('.dl-start').value,due:r.querySelector('.dl-due').value,owner:r.querySelector('.dl-own').value,done:r.querySelector('.dl-chk').checked})})}
@@ -3735,6 +3751,7 @@ document.addEventListener('click',async e=>{
   if(a==='deldl'){v.draft.deliverables.splice(+b.dataset.i,1);return renderView()}
   if(a==='zoom'){zoomMap(b.dataset.v==='0'?0:b.dataset.v==='+'?1.25:.8);return}
   if(a==='clrcolors'){for(const k of Object.values(COLORKEY))delete v.draft.look[k];return renderView()}
+  if(a==='avrand'||a==='avclear'||a==='avmaker'){pull();return avAction(a,v)}
   if(a==='lookset'){pull();const k=b.dataset.k;v.draft.look[k]=k==='b'?b.dataset.v:+b.dataset.v;return renderView()}
   if(a==='lookrand'){pull();const h=Math.floor(Math.random()*1e9);v.draft.look=npcLook({},String(h));return renderView()}
   if(a==='rmphoto'){v.draft.photo='';return renderView()}
@@ -3812,7 +3829,7 @@ document.addEventListener('submit',async e=>{
     return
   }
   if(f==='member'){
-    const d=v.draft,data={name:d.name.trim(),dept:d.dept,stars:d.stars,photo:d.photo,animal:d.animal,title:d.title.trim(),telegram:(d.telegram||'').trim().replace(/^@/,''),email:(d.email||'').trim(),pemail:(d.pemail||'').trim(),phone:(d.phone||'').trim(),course:(d.course||'').trim(),notes:(d.notes||'').trim(),task:d.task.trim(),away:!!d.away,low:!!d.low,look:d.look};
+    const d=v.draft,data={name:d.name.trim(),dept:d.dept,stars:d.stars,photo:d.photo,animal:d.animal,title:d.title.trim(),telegram:(d.telegram||'').trim().replace(/^@/,''),email:(d.email||'').trim(),pemail:(d.pemail||'').trim(),phone:(d.phone||'').trim(),course:(d.course||'').trim(),notes:(d.notes||'').trim(),task:d.task.trim(),away:!!d.away,low:!!d.low,look:d.look};{const t=(d.avText||'').trim();if(t){const av=avClean(t);if(!av)return toast('That avatar code does not look right. Copy it again from the maker, or press Automatic.');data.avatar=av}}
     if(!data.name)return;const id=v.id||uid();if(v.id&&st.members[id].sample)data.sample=true;
     close();const ok=await save(()=>api.set('members',id,data),v.id?'Saved':`${data.name} moved in`);if(ok&&!v.id)logAct(`${data.name} joined A-HOUSE`,'join',id);return
   }
@@ -3930,7 +3947,7 @@ var NPC_ORG=null;
 var COMM={},COMM_SITES={};
 function commSpot(pid,mid){const sp=COMM_SITES[pid];if(!sp)return null;const h=hashStr(mid+pid);return{u:sp.u+((h&63)-32)*1.2,v:sp.v+(((h>>>6)&63)-32)}}
 function commPin(m,c){const L=npcLook(m,m.id),s=statusOf(m.id,m),act=activeOf(m.id),tag=stText(s,act,m.id);ensureLook(L);
-  return `<button class="tok pin comm s${m.stars||2} ${s}" data-act="member" data-id="${m.id}" data-st="${s}" title="${esc(m.name+' \u00B7 '+tag)}" aria-label="${esc(m.name+', '+tag)}" style="left:0;top:0;--dc:${deptColor(m.dept)};--pc:${projColor(c.pids[c.cur])};--bd:-${((hashStr(m.id)%12)/10).toFixed(1)}s"><span class="nm"><i class="sd"></i>${act.map(p=>`<i class="pjd" style="background:${projColor(p.id)}"></i>`).join('')}${esc(m.name.split(' ')[0])}</span><span class="pin-b"><i class="pin-ring"></i><span class="spr ${L.b} lk-${npcKey(L)} c-idle_down"></span><i class="pin-st">${ICONS[s]}</i></span></button>`}
+  return `<button class="tok pin comm s${m.stars||2} ${s}" data-act="member" data-id="${m.id}" data-st="${s}" title="${esc(m.name+' \u00B7 '+tag)}" aria-label="${esc(m.name+', '+tag)}" style="left:0;top:0;--dc:${deptColor(m.dept)};--pc:${projColor(c.pids[c.cur])};--bd:-${((hashStr(m.id)%12)/10).toFixed(1)}s"><span class="nm"><i class="sd"></i>${act.map(p=>`<i class="pjd" style="background:${projColor(p.id)}"></i>`).join('')}${esc(m.name.split(' ')[0])}</span><span class="pin-b"><i class="pin-ring"></i>${commSpr(m,L)}<i class="pin-st">${ICONS[s]}</i></span></button>`}
 function commMount(ms){
   const old=document.getElementById('comm');if(old)old.remove();
   const list=ms.filter(commuter);Object.keys(COMM).forEach(id=>{if(!list.some(m=>m.id===id))delete COMM[id]});
@@ -3944,8 +3961,8 @@ function commMount(ms){
 }
 function commPaint(){if(!NPC_ORG)return;Object.entries(COMM).forEach(([id,c])=>{const el=document.getElementById('cm'+id);if(!el)return;
   const X=NPC_ORG.x+(c.u+c.v)*K2,Y=NPC_ORG.y+(c.v-c.u)*K2*.5;el.style.transform=`translate(${X.toFixed(1)}px,${Y.toFixed(1)}px)`;el.style.zIndex=1000+Math.round(Y);
-  const pin=el.firstElementChild;if(!pin)return;const spr=pin.querySelector('.spr'),clip=c.walk?'walk_'+c.dir:'idle_down';
-  if(spr&&spr._c!==clip){spr.className=spr.className.replace(/c-\S+/,'c-'+clip);spr._c=clip}
+  const pin=el.firstElementChild;if(!pin)return;const spr=pin.querySelector('.avs,.spr'),clip=c.walk?'walk_'+c.dir:'idle_down';
+  if(spr&&spr._c!==clip){setClip(spr,clip);spr._c=clip}
   const col=projColor(c.pids[c.walk?c.k:c.cur]);if(pin._pc!==col){pin.style.setProperty('--pc',col);pin._pc=col}})}
 var commT=Date.now();
 setInterval(()=>{const now=Date.now(),dt=Math.min(.25,(now-commT)/1000);commT=now;
@@ -4078,8 +4095,8 @@ function wanderStep(dt,still){
     }
     const sx=(w.du+w.dv)*K2,sy=(w.dv-w.du)*K2*.5;
     el.style.translate=`${sx.toFixed(1)}px ${sy.toFixed(1)}px`;el.style.zIndex=el._z+Math.round(sy);el.classList.toggle('walking',w.walk&&!hold);
-    const spr=el._spr||(el._spr=el.querySelector('.spr'));
-    if(spr){const dir=w.dir||'down',clip=w.walk&&!hold?'walk_'+dir:(dir==='left'||dir==='right'?'idle_'+dir+'_classic':'idle_'+dir);if(spr._c!==clip){spr.className=spr.className.replace(/c-\S+/,'c-'+clip);spr._c=clip}}
+    const spr=el._spr||(el._spr=el.querySelector('.avs,.spr'));
+    if(spr){const dir=w.dir||'down',clip=w.walk&&!hold?'walk_'+dir:(dir==='left'||dir==='right'?'idle_'+dir+'_classic':'idle_'+dir);if(spr._c!==clip){setClip(spr,clip);spr._c=clip}}
   });
 }
 setInterval(()=>{const now=Date.now(),dt=Math.min(.25,(now-wdT)/1000);wdT=now;if(document.hidden)return;wanderStep(dt,matchMedia('(prefers-reduced-motion: reduce)').matches)},80);
@@ -4172,5 +4189,122 @@ async function ensureLook(L){
     st.textContent+=rules;
   })();
 }
+/* ===== avatars: members are drawn from the avatar kit in avatar/ (see tools/apply_avatars.py) =====
+   m.avatar = {build, parts[], colors{}} on the member record (the "avatar code" the maker gives out).
+   Members without one get a look built from their id, so everybody on the map uses the new style.
+   Everything here is var/function so it is safe to call before this point of the page script has run. */
+var AVON=false,AVK=null,AVMAN=null,AVSEEN={},AVRND={};
+const AV_SKINS=['#f7d7b8','#f2c29a','#e0a878','#c68a5c','#8d5a3c','#5e3a26'],AV_HAIRS=['#2a2321','#4a2e1e','#6a4426','#a8763e','#e0c070','#c0503a','#8a8a96','#5a6ad0'],
+  AV_BLANKETS=['#4a72c0','#c0503a','#4a9a6a','#8a5ab0','#d9a83a','#d9709a'],
+  AV_TOPS=['#d6403a','#3a5a8a','#4a8f5a','#e0a23a','#7a5ab0','#2f8f8f','#e07aa0','#3b3e48','#f0ece0','#c0643a'],
+  AV_BOTTOMS=['#3a4a6a','#2a2a36','#5a4a38','#6a7a8a','#4a5a3a','#8a4a4a'],AV_SHOES=['#2a2321','#f4f0ea','#6a4426','#3a5a8a'];
+const AV_ROW={down:0,left:1,up:2,right:3};
+
+/* a short stable name for a look, used in the CSS class that carries its sprite sheets */
+function avKey(c){const s=c.build+'|'+c.parts.join(',')+'|'+Object.keys(c.colors).sort().map(k=>k+'='+c.colors[k]).join(',');let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
+
+/* turn whatever was saved or pasted into a clean avatar code, or null if it isn't one */
+function avClean(raw){
+  try{if(typeof raw==='string')raw=JSON.parse(raw)}catch(e){return null}
+  if(!raw||typeof raw!=='object'||Array.isArray(raw)||!Array.isArray(raw.parts))return null;
+  const build=String(raw.build||'');if(AVMAN?!AVMAN.builds[build]:!/^[a-z]{3,12}$/.test(build))return null;
+  const ok=p=>typeof p==='string'&&/^[a-z_]+(\.[a-z_0-9]+)?$/.test(p)&&!p.startsWith('props.')&&(!AVMAN||!!AVMAN.parts[p]);
+  const colors={};
+  if(raw.colors&&typeof raw.colors==='object')for(const[k,v]of Object.entries(raw.colors))if(/^[a-z_0-9.]+(#[ab])?$/.test(k)&&/^#?[0-9a-fA-F]{6}$/.test(String(v)))colors[k]=('#'+String(v).replace('#','')).toLowerCase();
+  return{build,parts:[...new Set(['body',...raw.parts.filter(ok)])].slice(0,40),colors};
+}
+
+/* a look made from an id: same id, same look, every time */
+function avRandom(id){
+  id=String(id);if(AVRND[id])return AVRND[id];
+  let h=hashStr(id+'~avatar')>>>0;
+  const rnd=()=>{h=(h+0x6D2B79F5)>>>0;let t=Math.imul(h^h>>>15,1|h);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+  const pick=a=>a[Math.floor(rnd()*a.length)],build=pick(Object.keys(AVMAN.builds)),walk=AVMAN.builds[build].walk||[];
+  const L=pre=>walk.filter(p=>p.startsWith(pre+'.')),has=n=>walk.includes('acc.'+n);
+  const parts=['body'],colors={skin:pick(AV_SKINS),hair:pick(AV_HAIRS),blanket:pick(AV_BLANKETS)};
+  const add=(p,pal)=>{parts.push(p);const ch=(AVMAN.parts[p]||{}).channels||{};if(ch.a&&pal)colors[p+'#a']=pick(pal)};
+  const hb=L('hair_back'),hf=L('hair_front');
+  if(hb.length&&rnd()<.92)parts.push(pick(hb));
+  if(hf.length&&rnd()<.85)parts.push(pick(hf));
+  if(walk.includes('ahoge')&&rnd()<.2)parts.push('ahoge');
+  const dr=L('dress'),tp=L('top'),bt=L('bottom');
+  if(dr.length&&rnd()<.22)add(pick(dr),AV_TOPS);else{if(tp.length)add(pick(tp),AV_TOPS);if(bt.length)add(pick(bt),AV_BOTTOMS)}
+  const sh=L('shoes');if(sh.length)add(pick(sh),AV_SHOES);
+  const ou=L('outer');if(ou.length&&rnd()<.15)add(pick(ou),AV_TOPS);
+  for(const[chance,names]of[[.3,['beanie','headphones','hairband','hairclip','bow']],[.25,['glasses','sunglasses']],[.25,['scarf','lanyard','backpack','crossbody']]]){
+    const o=names.filter(has);if(o.length&&rnd()<chance)parts.push('acc.'+pick(o))}
+  return AVRND[id]={build,parts,colors};
+}
+/* the look a member is drawn with: their own code, else the one made from their id */
+function avOf(m,id){return avClean(m&&m.avatar)||avRandom(id||(m&&m.id)||'x')}
+
+/* build the five sheets (walk, idle, sit, work, sleep) for a look once, and hand them to the page as CSS rules */
+var AVQ=Promise.resolve();   // one look at a time, so the browser is not asked for hundreds of layer images at once
+function avEnsure(code){
+  const key=avKey(code);if(AVSEEN[key])return AVSEEN[key];
+  return AVSEEN[key]=AVQ=AVQ.then(async()=>{
+    let css='';
+    for(const a of['walk','idle','sit','work','sleep']){
+      const s=await AVK.compose({build:code.build,anim:a,parts:code.parts.concat(['props.desk','props.bed']),colors:code.colors});
+      css+=`.avs.av-${key}.a-${a}{background-image:url(${s.canvas.toDataURL('image/png')})}\n`}
+    let el=document.getElementById('avsheets');if(!el){el=document.createElement('style');el.id='avsheets';document.head.appendChild(el)}
+    el.textContent+=css;
+  }).catch(()=>{});
+}
+const avSpan=(code,anim,row,extra)=>{avEnsure(code);return `<span class="avs av-${avKey(code)} a-${anim} r-${row}"${extra||''}></span>`};
+/* the figure inside a map pin: asleep on a bed, busy at a desk (seen from behind), or standing */
+function pinSpr(m,s,pos){
+  if(!AVON)return `<span class="spr ${npcLook(m,m.id).b} lk-${npcKey(npcLook(m,m.id))} c-${s==='busy'?'idle_up':'idle_down'}"></span>`;
+  const code=avOf(m,m.id);
+  return pos&&pos.sleep?avSpan(code,'sleep',1):s==='busy'?avSpan(code,'work',2):avSpan(code,'idle',0);
+}
+function commSpr(m,L){return AVON?avSpan(avOf(m,m.id),'idle',0):`<span class="spr ${L.b} lk-${npcKey(L)} c-idle_down"></span>`}
+/* the walking code gives clips like walk_left, idle_up or idle_right_classic; the avatar sheets have one row per direction */
+function avSet(spr,clip){const p=clip.split('_');spr.className=spr.className.replace(/\ba-\S+/,'a-'+(p[0]==='walk'?'walk':'idle')).replace(/\br-\d/,'r-'+(AV_ROW[p[1]]??0))}
+function setClip(spr,clip){if(spr.classList.contains('avs'))avSet(spr,clip);else spr.className=spr.className.replace(/c-\S+/,'c-'+clip)}
+
+/* ---- the member editor: Avatar box ---- */
+function avEditorHTML(f){
+  const rid=(ui.view&&ui.view.id)||f._rid||(f._rid=uid()),raw=(f.avText||'').trim();
+  if(!AVON)return `<div class="f">Avatar<span class="hint" style="font-weight:400">The avatar parts could not be loaded, so this can't be edited right now.</span></div>`;
+  const code=raw?avClean(raw):avRandom(rid);
+  return `<div class="f">Avatar<div class="lookrow"><span class="look-prev">${code?avSpan(code,'walk',0,` id="av-pv" data-rid="${esc(rid)}"`):''}</span><div class="pick">
+    <textarea id="m-avatar" rows="3" spellcheck="false" autocomplete="off" placeholder="Paste your avatar code here" style="font:12px ui-monospace,monospace">${esc(f.avText||'')}</textarea>
+    <div class="seg"><a class="btn ghost" href="avatar/maker.html" target="_blank" rel="noopener">Open the avatar maker</a><button type="button" class="btn ghost" data-act="avmaker">Use my maker avatar</button><button type="button" class="btn ghost" data-act="avrand">Randomise</button><button type="button" class="btn ghost" data-act="avclear">Automatic</button></div>
+    <span class="hint" id="av-msg" style="font-weight:400">${raw?(code?'Looks good. Press Save to keep it.':'That code does not look right. Copy it again from the maker.'):'Automatic: a look is picked for you until you paste a code from the maker.'}</span></div></div></div>`;
+}
+function avPreview(){
+  const t=document.getElementById('m-avatar'),pv=document.getElementById('av-pv'),msg=document.getElementById('av-msg');if(!t||!pv||!msg)return;
+  const raw=t.value.trim(),code=raw?avClean(raw):avRandom(pv.dataset.rid);
+  if(!code){msg.textContent='That code does not look right. Copy it again from the maker.';return}
+  avEnsure(code);pv.className=pv.className.replace(/\bav-\S+/,'av-'+avKey(code));
+  msg.textContent=raw?'Looks good. Press Save to keep it.':'Automatic: a look is picked for you until you paste a code from the maker.';
+}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='m-avatar')avPreview()});
+/* the maker keeps what you are designing in this browser; turn it into a code */
+function avFromMaker(){
+  try{const s=JSON.parse(localStorage.getItem('ahq-avatar')||'null');if(!s||!s.build)return null;
+    const p=['body'];if(s.hair_back)p.push('hair_back.'+s.hair_back);if(s.hair_front)p.push('hair_front.'+s.hair_front);if(s.hair_side)p.push('hair_side.'+s.hair_side);if(s.ahoge)p.push('ahoge');
+    if(s.dress)p.push('dress.'+s.dress);else{if(s.top)p.push('top.'+s.top);if(s.bottom)p.push('bottom.'+s.bottom)}
+    for(const k of['outer','shoes'])if(s[k])p.push(k+'.'+s[k]);(s.acc||[]).forEach(a=>p.push('acc.'+a));
+    return avClean({build:s.build,parts:p,colors:s.colors||{}})}catch(e){return null}
+}
+function avAction(a,v){
+  if(a==='avrand'){v.draft.avText=JSON.stringify(avRandom('r'+Math.random()+Date.now()))}
+  else if(a==='avclear'){v.draft.avText=''}
+  else if(a==='avmaker'){const c=avFromMaker();if(!c)return toast('Open the avatar maker first and design your avatar, then come back.');v.draft.avText=JSON.stringify(c)}
+  renderView();
+}
+
+/* start up: load the kit, build every member's sheets once, then redraw the map with the new figures */
+(function(){
+  const sc=document.createElement('script');sc.src='avatar/avatar.js';
+  sc.onload=()=>AvatarKit.load('avatar/').then(async k=>{
+    AVK=k;AVMAN=k.man;
+    try{await Promise.all(Object.entries(st.members||{}).map(([id,m])=>avEnsure(avOf(m,id))))}catch(e){}
+    AVON=true;try{render()}catch(e){}
+  }).catch(()=>{});
+  sc.onerror=()=>{};document.head.appendChild(sc);
+})();
 </script>
 </body></html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A-HOUSE HQ · Make your avatar</title>
+<style>
+  :root{--bg:#efe3c6;--panel:#fbf4e4;--ink:#2a1a0c;--muted:#7a6248;--line:#d9c7a3;--accent:#c96a3a}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+  header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:2px solid var(--line)}
+  header h1{font-size:18px;margin:0}
+  header a{color:var(--muted);text-decoration:none;margin-left:auto}
+  main{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:20px;padding:20px;max-width:1200px;margin:auto}
+  @media (max-width:800px){main{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:14px}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .views{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;background:#e6d4ae;border-radius:8px;padding:14px;min-height:180px}
+  .views canvas{image-rendering:pixelated}
+  .anims{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  button,.chip{font:inherit;border:2px solid var(--line);background:#fff8ea;border-radius:7px;padding:5px 10px;cursor:pointer;color:var(--ink)}
+  button[aria-pressed=true],.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:16px 0 6px}
+  h2:first-child{margin-top:0}
+  .row{display:flex;align-items:center;gap:8px;margin:5px 0}
+  .row label{width:90px;color:var(--muted)}
+  select{flex:1;font:inherit;padding:5px;border:2px solid var(--line);border-radius:7px;background:#fff8ea}
+  input[type=color]{width:34px;height:30px;border:2px solid var(--line);border-radius:7px;padding:0;background:none}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .swatches{display:flex;gap:4px}
+  .sw{width:22px;height:22px;border-radius:5px;border:2px solid #0002;cursor:pointer}
+  textarea{width:100%;height:90px;font:12px ui-monospace,monospace;border:2px solid var(--line);border-radius:7px;padding:6px;background:#fff8ea}
+  .note{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header><h1>Make your avatar</h1><span class="note" id="status">Loading parts…</span><a href="../index.html">← Back to HQ</a></header>
+<main>
+  <section class="panel" id="controls" aria-label="Avatar options"></section>
+  <section class="stage">
+    <div class="views panel" id="views" aria-label="Preview in every direction"></div>
+    <div class="anims" id="anims" role="group" aria-label="Animation"></div>
+    <div class="panel" style="width:100%">
+      <h2>Your avatar code</h2>
+      <textarea id="code" readonly aria-label="Avatar code"></textarea>
+      <div class="row"><button id="copy">Copy code</button><button id="png">Download this animation (PNG)</button></div>
+      <p class="note">To walk around HQ as this avatar: open your member profile, press Edit, and under Avatar press "Use my maker avatar" (or paste this code), then Save.</p>
+    </div>
+  </section>
+</main>
+<script src="avatar.js"></script>
+<script>
+const NICE = s => s.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
+const SKINS = ['#f7d7b8', '#f2c29a', '#e0a878', '#c68a5c', '#8d5a3c', '#5e3a26'];
+const HAIRS = ['#2a2321', '#4a2e1e', '#6a4426', '#a8763e', '#e0c070', '#c0503a', '#8a8a96', '#5a6ad0'];
+let kit, stop = [], state;
+const DEFAULT = {build: 'female', anim: 'walk', hair_back: 'bob', hair_front: 'blunt', hair_side: '', ahoge: false,
+  top: 'tee', dress: '', bottom: 'jeans', outer: '', shoes: 'sneakers', acc: [],
+  colors: {skin: '#f2c29a', hair: '#4a2e1e', blanket: '#4a72c0'}};
+function load() { try { return Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem('ahq-avatar') || '{}')) } catch (e) { return {...DEFAULT} } }
+function persist() { try { localStorage.setItem('ahq-avatar', JSON.stringify(state)) } catch (e) {} }
+
+function partsOf(prefix) {           // names available for this build in any animation
+  const s = new Set(); const b = kit.man.builds[state.build] || {};
+  Object.values(b).forEach(list => list.forEach(p => { if (p.startsWith(prefix + '.')) s.add(p.slice(prefix.length + 1)) }));
+  return [...s].sort();
+}
+function selected() {
+  const p = ['body'];
+  if (state.hair_back) p.push('hair_back.' + state.hair_back);
+  if (state.hair_front) p.push('hair_front.' + state.hair_front);
+  if (state.hair_side) p.push('hair_side.' + state.hair_side);
+  if (state.ahoge) p.push('ahoge');
+  if (state.dress) p.push('dress.' + state.dress); else { if (state.top) p.push('top.' + state.top); if (state.bottom) p.push('bottom.' + state.bottom) }
+  for (const k of ['outer', 'shoes']) if (state[k]) p.push(k + '.' + state[k]);
+  state.acc.forEach(a => p.push('acc.' + a));
+  p.push('props.desk', 'props.bed');
+  return p;
+}
+function colorRow(label, key, fallback, swatches) {
+  const r = document.createElement('div'); r.className = 'row';
+  r.innerHTML = `<label>${label}</label>`;
+  const fix = c => c ? (c[0] === '#' ? c : '#' + c) : '#808080';
+  const inp = document.createElement('input'); inp.type = 'color'; inp.value = fix(state.colors[key] || fallback);
+  inp.setAttribute('aria-label', label + ' colour');
+  inp.oninput = () => { state.colors[key] = inp.value; refresh() };
+  r.append(inp);
+  if (swatches) { const s = document.createElement('div'); s.className = 'swatches';
+    swatches.forEach(c => { const b = document.createElement('span'); b.className = 'sw'; b.style.background = c; b.title = c;
+      b.onclick = () => { state.colors[key] = c; inp.value = c; refresh() }; s.append(b) }); r.append(s) }
+  return r;
+}
+function selectRow(label, key, options, allowNone = true) {
+  const r = document.createElement('div'); r.className = 'row';
+  r.innerHTML = `<label>${label}</label>`;
+  const sel = document.createElement('select'); sel.setAttribute('aria-label', label);
+  if (allowNone) sel.append(new Option('None', ''));
+  options.forEach(o => sel.append(new Option(NICE(o), o)));
+  sel.value = state[key] || '';
+  sel.onchange = () => { state[key] = sel.value; if (key === 'dress' && sel.value) { state.top = ''; state.bottom = '' }
+    if ((key === 'top' || key === 'bottom') && sel.value) state.dress = ''; build(); refresh() };
+  r.append(sel); return r;
+}
+function partColors(group, kind, name) {          // main / accent colour for a chosen part
+  if (!name) return;
+  const part = kind + '.' + name, ch = (kit.man.parts[part] || {}).channels || {}, d = ch.defaults || {};
+  if (ch.a) group.append(colorRow('  colour', part + '#a', d[ch.a]));
+  if (ch.b && ch.b !== 'skin') group.append(colorRow('  accent', part + '#b', d[ch.b]));
+}
+function build() {
+  const c = document.getElementById('controls'); c.innerHTML = '';
+  const h = t => { const e = document.createElement('h2'); e.textContent = t; c.append(e) };
+  h('Body');
+  const bt = document.createElement('div'); bt.className = 'chips';
+  Object.keys(kit.man.builds).forEach(b => { const x = document.createElement('button'); x.textContent = NICE(b);
+    x.setAttribute('aria-pressed', state.build === b); x.onclick = () => { state.build = b; build(); refresh() }; bt.append(x) });
+  c.append(bt, colorRow('Skin', 'skin', '#f2c29a', SKINS));
+  h('Hair');
+  c.append(selectRow('Back', 'hair_back', partsOf('hair_back')), selectRow('Bangs', 'hair_front', partsOf('hair_front')),
+           selectRow('Sides', 'hair_side', partsOf('hair_side')));
+  const ah = document.createElement('label'); ah.className = 'row';
+  ah.innerHTML = `<input type="checkbox" ${state.ahoge ? 'checked' : ''}> Stray strand on top`;
+  ah.querySelector('input').onchange = e => { state.ahoge = e.target.checked; refresh() };
+  if (partsOf('ahoge').length || (kit.man.builds[state.build] || {}).walk?.includes('ahoge')) c.append(ah);
+  c.append(colorRow('Hair colour', 'hair', '#4a2e1e', HAIRS));
+  h('Clothes');
+  for (const [k, label] of [['top', 'Top'], ['bottom', 'Bottom'], ['dress', 'Dress'], ['outer', 'Outerwear'], ['shoes', 'Shoes']]) {
+    const opts = partsOf(k); if (!opts.length) continue;
+    c.append(selectRow(label, k, opts)); partColors(c, k, state[k]);
+  }
+  h('Accessories & face');
+  const chips = document.createElement('div'); chips.className = 'chips';
+  partsOf('acc').forEach(a => { const x = document.createElement('button'); x.textContent = NICE(a);
+    x.setAttribute('aria-pressed', state.acc.includes(a));
+    x.onclick = () => { state.acc = state.acc.includes(a) ? state.acc.filter(y => y !== a) : [...state.acc, a]; build(); refresh() };
+    chips.append(x) });
+  c.append(chips);
+  state.acc.forEach(a => partColors(c, 'acc', a));
+  h('Bed'); c.append(colorRow('Blanket', 'blanket', '#4a72c0'));
+}
+async function refresh() {
+  persist();
+  const sel = selected();
+  document.getElementById('code').value = JSON.stringify({build: state.build, parts: sel.filter(p => !p.startsWith('props.')), colors: state.colors});
+  const v = document.getElementById('views'); stop.forEach(f => f()); stop = []; v.innerHTML = '';
+  const sheet = await kit.compose({build: state.build, anim: state.anim, parts: sel, colors: state.colors});
+  sheet.rows.forEach((r, i) => { const cv = document.createElement('canvas'); cv.title = r; cv.setAttribute('aria-label', 'facing ' + r);
+    v.append(cv); stop.push(AvatarKit.play(sheet, cv, i, 5)) });
+  window._sheet = sheet;
+}
+async function init() {
+  kit = await AvatarKit.load('./');
+  state = load();
+  if (!kit.man.builds[state.build]) state.build = Object.keys(kit.man.builds)[0];
+  const an = document.getElementById('anims');
+  Object.keys(kit.man.anims).forEach(a => { const b = document.createElement('button'); b.textContent = NICE(a);
+    b.setAttribute('aria-pressed', state.anim === a);
+    b.onclick = () => { state.anim = a; [...an.children].forEach(x => x.setAttribute('aria-pressed', x === b)); refresh() }; an.append(b) });
+  if (!kit.man.anims[state.anim]) state.anim = Object.keys(kit.man.anims)[0];
+  build(); refresh();
+  document.getElementById('status').textContent = '';
+  document.getElementById('copy').onclick = () => { const t = document.getElementById('code'); t.select(); navigator.clipboard?.writeText(t.value) };
+  document.getElementById('png').onclick = () => { const a = document.createElement('a'); a.download = `avatar_${state.anim}.png`;
+    a.href = window._sheet.canvas.toDataURL('image/png'); a.click() };
+}
+init().catch(e => { document.getElementById('status').textContent = 'Could not load avatar parts: ' + e.message });
+</script>
+</body>
+</html>

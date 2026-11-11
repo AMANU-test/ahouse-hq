@@ -1,0 +1,1726 @@
+{
+ "builds": {
+  "female": {
+   "idle": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.glasses",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "acc.sunglasses",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.maxi_skirt",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.short_skirt",
+    "bottom.shorts",
+    "bottom.skirt",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "shoes.boots",
+    "shoes.flats",
+    "shoes.sandals",
+    "shoes.shoes",
+    "shoes.sneakers",
+    "shoes.white_sneakers",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.loose_tee",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ],
+   "sit": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.glasses",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "acc.sunglasses",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.maxi_skirt",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.short_skirt",
+    "bottom.shorts",
+    "bottom.skirt",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "shoes.boots",
+    "shoes.flats",
+    "shoes.sandals",
+    "shoes.shoes",
+    "shoes.sneakers",
+    "shoes.white_sneakers",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.loose_tee",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ],
+   "sleep": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.shorts",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "props.bed",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ],
+   "walk": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.glasses",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "acc.sunglasses",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.maxi_skirt",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.short_skirt",
+    "bottom.shorts",
+    "bottom.skirt",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "shoes.boots",
+    "shoes.flats",
+    "shoes.sandals",
+    "shoes.shoes",
+    "shoes.sneakers",
+    "shoes.white_sneakers",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.loose_tee",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ],
+   "work": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.glasses",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "acc.sunglasses",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.maxi_skirt",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.short_skirt",
+    "bottom.shorts",
+    "bottom.skirt",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "props.desk",
+    "shoes.boots",
+    "shoes.flats",
+    "shoes.sandals",
+    "shoes.shoes",
+    "shoes.sneakers",
+    "shoes.white_sneakers",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.loose_tee",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ]
+  },
+  "male": {
+   "idle": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.glasses",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "acc.sunglasses",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.maxi_skirt",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.short_skirt",
+    "bottom.shorts",
+    "bottom.skirt",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "shoes.boots",
+    "shoes.flats",
+    "shoes.sandals",
+    "shoes.shoes",
+    "shoes.sneakers",
+    "shoes.white_sneakers",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.loose_tee",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ],
+   "sit": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.glasses",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "acc.sunglasses",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.maxi_skirt",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.short_skirt",
+    "bottom.shorts",
+    "bottom.skirt",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "shoes.boots",
+    "shoes.flats",
+    "shoes.sandals",
+    "shoes.shoes",
+    "shoes.sneakers",
+    "shoes.white_sneakers",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.loose_tee",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ],
+   "sleep": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.shorts",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "props.bed",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ],
+   "walk": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.glasses",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "acc.sunglasses",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.maxi_skirt",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.short_skirt",
+    "bottom.shorts",
+    "bottom.skirt",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "shoes.boots",
+    "shoes.flats",
+    "shoes.sandals",
+    "shoes.shoes",
+    "shoes.sneakers",
+    "shoes.white_sneakers",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.loose_tee",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ],
+   "work": [
+    "acc.backpack",
+    "acc.bandaid",
+    "acc.beanie",
+    "acc.belt",
+    "acc.blush",
+    "acc.bow",
+    "acc.cap",
+    "acc.cap_back",
+    "acc.crossbody",
+    "acc.glasses",
+    "acc.hairband",
+    "acc.hairclip",
+    "acc.headphones",
+    "acc.lanyard",
+    "acc.mask",
+    "acc.scarf",
+    "acc.sunglasses",
+    "ahoge",
+    "body",
+    "bottom.cargo",
+    "bottom.jeans",
+    "bottom.maxi_skirt",
+    "bottom.overalls",
+    "bottom.pants",
+    "bottom.pleated_skirt",
+    "bottom.ripped_jeans",
+    "bottom.short_skirt",
+    "bottom.shorts",
+    "bottom.skirt",
+    "bottom.wide_pants",
+    "bottom.wide_shorts",
+    "dress.apron_dress",
+    "dress.gown",
+    "dress.romper",
+    "dress.suit_dress",
+    "dress.sundress",
+    "hair_back.afro",
+    "hair_back.bob",
+    "hair_back.braid",
+    "hair_back.bushy",
+    "hair_back.cropped",
+    "hair_back.high_bun",
+    "hair_back.high_ponytail",
+    "hair_back.long",
+    "hair_back.low_ponytail",
+    "hair_back.shoulder",
+    "hair_back.space_buns",
+    "hair_back.spiky",
+    "hair_back.twin_tails",
+    "hair_front.blunt",
+    "hair_front.curtain",
+    "hair_front.middle_part",
+    "hair_front.side_part",
+    "hair_front.spiky_tuft",
+    "hair_front.swept",
+    "hair_front.wispy",
+    "hair_side.fluffy",
+    "hair_side.framing",
+    "hair_side.long_locks",
+    "hair_side.tucked",
+    "outer.blazer",
+    "outer.cape",
+    "outer.cardigan",
+    "outer.jacket",
+    "outer.puffer",
+    "outer.track_jacket",
+    "outer.trench",
+    "outer.vest",
+    "props.desk",
+    "shoes.boots",
+    "shoes.flats",
+    "shoes.sandals",
+    "shoes.shoes",
+    "shoes.sneakers",
+    "shoes.white_sneakers",
+    "top.button_up",
+    "top.crop",
+    "top.hoodie",
+    "top.loose_tee",
+    "top.off_shoulder",
+    "top.polo",
+    "top.sweater",
+    "top.tank",
+    "top.tee",
+    "top.turtleneck",
+    "top.villager_shirt",
+    "top.vneck"
+   ]
+  }
+ },
+ "anims": {
+  "idle": {
+   "frameWidth": 27,
+   "frameHeight": 30,
+   "anchor": {
+    "x": 13,
+    "y": 26
+   },
+   "frames": 8,
+   "fps": 6.0,
+   "rows": [
+    "down",
+    "left",
+    "up",
+    "right"
+   ]
+  },
+  "sit": {
+   "frameWidth": 27,
+   "frameHeight": 30,
+   "anchor": {
+    "x": 13,
+    "y": 26
+   },
+   "frames": 8,
+   "fps": 6.0,
+   "rows": [
+    "down",
+    "left",
+    "up",
+    "right"
+   ]
+  },
+  "sleep": {
+   "frameWidth": 41,
+   "frameHeight": 38,
+   "anchor": {
+    "x": 20,
+    "y": 26
+   },
+   "frames": 8,
+   "fps": 4.0,
+   "rows": [
+    "head_left",
+    "head_right",
+    "down"
+   ]
+  },
+  "walk": {
+   "frameWidth": 27,
+   "frameHeight": 30,
+   "anchor": {
+    "x": 13,
+    "y": 26
+   },
+   "frames": 8,
+   "fps": 8.0,
+   "rows": [
+    "down",
+    "left",
+    "up",
+    "right"
+   ]
+  },
+  "work": {
+   "frameWidth": 29,
+   "frameHeight": 30,
+   "anchor": {
+    "x": 14,
+    "y": 26
+   },
+   "frames": 8,
+   "fps": 8.0,
+   "rows": [
+    "down",
+    "left",
+    "up",
+    "right"
+   ]
+  }
+ },
+ "order": {
+  "front": [
+   "props.bed",
+   "body",
+   "shoes",
+   "bottom",
+   "dress",
+   "top",
+   "acc.belt",
+   "outer",
+   "acc.scarf",
+   "acc.lanyard",
+   "acc.crossbody",
+   "acc.backpack",
+   "hair_back",
+   "acc.blush",
+   "acc.bandaid",
+   "acc.mask",
+   "hair_side",
+   "acc.glasses",
+   "acc.sunglasses",
+   "hair_front",
+   "ahoge",
+   "acc.hairclip",
+   "acc.hairband",
+   "acc.bow",
+   "acc.headphones",
+   "acc.beanie",
+   "acc.cap",
+   "acc.cap_back",
+   "props.desk"
+  ],
+  "back": [
+   "props.bed",
+   "body",
+   "shoes",
+   "bottom",
+   "dress",
+   "top",
+   "acc.belt",
+   "outer",
+   "acc.scarf",
+   "acc.lanyard",
+   "acc.crossbody",
+   "hair_front",
+   "acc.blush",
+   "acc.bandaid",
+   "acc.mask",
+   "acc.glasses",
+   "acc.sunglasses",
+   "acc.backpack",
+   "hair_side",
+   "hair_back",
+   "ahoge",
+   "acc.hairclip",
+   "acc.hairband",
+   "acc.bow",
+   "acc.headphones",
+   "acc.beanie",
+   "acc.cap",
+   "acc.cap_back",
+   "props.desk"
+  ]
+ },
+ "keys": {
+  "a": [
+   [
+    224,
+    224,
+    224
+   ],
+   [
+    160,
+    160,
+    160
+   ],
+   [
+    96,
+    96,
+    96
+   ]
+  ],
+  "b": [
+   [
+    208,
+    208,
+    208
+   ],
+   [
+    144,
+    144,
+    144
+   ],
+   [
+    80,
+    80,
+    80
+   ]
+  ],
+  "m": [
+   [
+    120,
+    120,
+    120
+   ]
+  ],
+  "note": "light/mid/dark greys a layer uses where it takes a chosen colour; each layer's 'channels' says which colour (hair, skin, top, ...) key a and key b stand for"
+ },
+ "parts": {
+  "acc.backpack": {
+   "channels": {
+    "a": "bag",
+    "defaults": {
+     "bag": "4a6a3a"
+    }
+   }
+  },
+  "acc.bandaid": {
+   "channels": {
+    "a": "bandaid",
+    "defaults": {
+     "bandaid": "fbf8f2"
+    }
+   }
+  },
+  "acc.beanie": {
+   "channels": {
+    "a": "hat",
+    "b": "cuff",
+    "defaults": {
+     "hat": "3a5a8a",
+     "cuff": "2c4870",
+     "pom": "eef0f2"
+    }
+   }
+  },
+  "acc.belt": {
+   "channels": {
+    "a": "belt",
+    "defaults": {
+     "belt": "2a1c14"
+    }
+   }
+  },
+  "acc.blush": {
+   "channels": {
+    "a": "blush",
+    "defaults": {
+     "blush": "f08a8a"
+    }
+   }
+  },
+  "acc.bow": {
+   "channels": {
+    "a": "ribbon",
+    "defaults": {
+     "ribbon": "d63a4a"
+    }
+   }
+  },
+  "acc.cap": {
+   "channels": {
+    "a": "hat",
+    "b": "brim",
+    "defaults": {
+     "hat": "d6403a",
+     "brim": "a02a2a",
+     "detail7": "f4f0ea"
+    }
+   }
+  },
+  "acc.cap_back": {
+   "channels": {
+    "a": "hat",
+    "b": "brim",
+    "defaults": {
+     "hat": "3a5a8a",
+     "brim": "2a4066"
+    }
+   }
+  },
+  "acc.crossbody": {
+   "channels": {
+    "a": "bag",
+    "defaults": {
+     "bag": "6a4426"
+    }
+   }
+  },
+  "acc.glasses": {
+   "channels": {
+    "a": "glasses",
+    "b": "lens",
+    "defaults": {
+     "glasses": "141414",
+     "lens": "f6f6f6"
+    }
+   }
+  },
+  "acc.hairband": {
+   "channels": {
+    "a": "band2",
+    "defaults": {
+     "band2": "e05a7a"
+    }
+   }
+  },
+  "acc.hairclip": {
+   "channels": {
+    "a": "clip",
+    "defaults": {
+     "clip": "f2c84a"
+    }
+   }
+  },
+  "acc.headphones": {
+   "channels": {
+    "a": "gear",
+    "b": "gear2",
+    "defaults": {
+     "gear": "eeeef2",
+     "gear2": "d6403a"
+    }
+   }
+  },
+  "acc.lanyard": {
+   "channels": {
+    "a": "band",
+    "b": "detail5",
+    "defaults": {
+     "band": "d6403a",
+     "detail5": "f4f0ea"
+    }
+   }
+  },
+  "acc.mask": {
+   "channels": {
+    "a": "mask",
+    "defaults": {
+     "mask": "eef0f2"
+    }
+   }
+  },
+  "acc.scarf": {
+   "channels": {
+    "a": "scarf",
+    "defaults": {
+     "scarf": "c03a3a"
+    }
+   }
+  },
+  "acc.sunglasses": {
+   "channels": {
+    "a": "glasses",
+    "b": "detail6",
+    "defaults": {
+     "glasses": "23232e",
+     "detail6": "dfe8f4"
+    }
+   }
+  },
+  "ahoge": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "body": {
+   "channels": {
+    "a": "skin",
+    "b": "skin_limb",
+    "m": "skin_mouth"
+   }
+  },
+  "bottom.cargo": {
+   "channels": {
+    "a": "bottom",
+    "b": "detail2",
+    "defaults": {
+     "bottom": "6a7048",
+     "detail2": "555a38"
+    }
+   }
+  },
+  "bottom.jeans": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "3d5a8c"
+    }
+   }
+  },
+  "bottom.maxi_skirt": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "5a6a3a"
+    }
+   }
+  },
+  "bottom.overalls": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "4a6a9a"
+    }
+   }
+  },
+  "bottom.pants": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "3a3a46"
+    }
+   }
+  },
+  "bottom.pleated_skirt": {
+   "channels": {
+    "a": "bottom",
+    "b": "detail2",
+    "defaults": {
+     "bottom": "8a3a3a",
+     "detail2": "6a2a2a"
+    }
+   }
+  },
+  "bottom.ripped_jeans": {
+   "channels": {
+    "a": "bottom",
+    "b": "detail2",
+    "defaults": {
+     "bottom": "4a6a9a",
+     "detail2": "c8d4e0"
+    }
+   }
+  },
+  "bottom.short_skirt": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "3a5a8a"
+    }
+   }
+  },
+  "bottom.shorts": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "c8b48a"
+    }
+   }
+  },
+  "bottom.skirt": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "b0483a"
+    }
+   }
+  },
+  "bottom.wide_pants": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "4a6a9a"
+    }
+   }
+  },
+  "bottom.wide_shorts": {
+   "channels": {
+    "a": "bottom",
+    "defaults": {
+     "bottom": "3a3a44"
+    }
+   }
+  },
+  "dress.apron_dress": {
+   "channels": {
+    "a": "top",
+    "b": "over",
+    "defaults": {
+     "top": "e6e1da",
+     "over": "4a2c22",
+     "bottom": "5a3428",
+     "detail": "d8d0c8"
+    }
+   }
+  },
+  "dress.gown": {
+   "channels": {
+    "a": "top",
+    "b": "bottom",
+    "defaults": {
+     "top": "8a3a8a",
+     "bottom": "8a3a8a"
+    }
+   }
+  },
+  "dress.romper": {
+   "channels": {
+    "a": "top",
+    "b": "bottom",
+    "defaults": {
+     "top": "8ab0d0",
+     "bottom": "8ab0d0"
+    }
+   }
+  },
+  "dress.suit_dress": {
+   "channels": {
+    "a": "top",
+    "b": "bottom",
+    "defaults": {
+     "top": "2f3e66",
+     "bottom": "2f3e66"
+    }
+   }
+  },
+  "dress.sundress": {
+   "channels": {
+    "a": "top",
+    "b": "bottom",
+    "defaults": {
+     "top": "e8b84a",
+     "bottom": "e8b84a",
+     "detail": "f4e2b0"
+    }
+   }
+  },
+  "hair_back.afro": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.bob": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.braid": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.bushy": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.cropped": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.high_bun": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.high_ponytail": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.long": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.low_ponytail": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.shoulder": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.space_buns": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.spiky": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_back.twin_tails": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_front.blunt": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_front.curtain": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_front.middle_part": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_front.side_part": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_front.spiky_tuft": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_front.swept": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_front.wispy": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_side.fluffy": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_side.framing": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_side.long_locks": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "hair_side.tucked": {
+   "channels": {
+    "a": "hair"
+   }
+  },
+  "outer.blazer": {
+   "channels": {
+    "a": "outer",
+    "defaults": {
+     "outer": "2f3e66"
+    }
+   }
+  },
+  "outer.cape": {
+   "channels": {
+    "a": "outer",
+    "defaults": {
+     "outer": "7a2a3a"
+    }
+   }
+  },
+  "outer.cardigan": {
+   "channels": {
+    "a": "outer",
+    "defaults": {
+     "outer": "b8a888"
+    }
+   }
+  },
+  "outer.jacket": {
+   "channels": {
+    "a": "outer",
+    "defaults": {
+     "outer": "6a6a3a"
+    }
+   }
+  },
+  "outer.puffer": {
+   "channels": {
+    "a": "outer",
+    "defaults": {
+     "outer": "d65a3a"
+    }
+   }
+  },
+  "outer.track_jacket": {
+   "channels": {
+    "a": "outer",
+    "b": "detail3",
+    "defaults": {
+     "outer": "2a4a8a",
+     "detail3": "eeeae4"
+    }
+   }
+  },
+  "outer.trench": {
+   "channels": {
+    "a": "outer",
+    "defaults": {
+     "outer": "b08a5a"
+    }
+   }
+  },
+  "outer.vest": {
+   "channels": {
+    "a": "outer",
+    "defaults": {
+     "outer": "3e3a2c"
+    }
+   }
+  },
+  "shoes.boots": {
+   "channels": {
+    "a": "shoes",
+    "defaults": {
+     "shoes": "4a3022"
+    }
+   }
+  },
+  "shoes.flats": {
+   "channels": {
+    "a": "shoes",
+    "defaults": {
+     "shoes": "2a2420"
+    }
+   }
+  },
+  "shoes.sandals": {
+   "channels": {
+    "a": "shoes",
+    "defaults": {
+     "shoes": "a0623a"
+    }
+   }
+  },
+  "shoes.shoes": {
+   "channels": {
+    "a": "shoes",
+    "defaults": {
+     "shoes": "2e2018"
+    }
+   }
+  },
+  "shoes.sneakers": {
+   "channels": {
+    "a": "shoes",
+    "b": "detail4",
+    "defaults": {
+     "shoes": "3a3a44",
+     "detail4": "f4f0ea"
+    }
+   }
+  },
+  "shoes.white_sneakers": {
+   "channels": {
+    "a": "shoes",
+    "defaults": {
+     "shoes": "ece8e0"
+    }
+   }
+  },
+  "top.button_up": {
+   "channels": {
+    "a": "top",
+    "b": "detail",
+    "defaults": {
+     "top": "eeeae4",
+     "detail": "9aa0b0"
+    }
+   }
+  },
+  "top.crop": {
+   "channels": {
+    "a": "top",
+    "defaults": {
+     "top": "f0d050"
+    }
+   }
+  },
+  "top.hoodie": {
+   "channels": {
+    "a": "top",
+    "b": "detail",
+    "defaults": {
+     "top": "7e5cc4",
+     "detail": "5e44a0"
+    }
+   }
+  },
+  "top.loose_tee": {
+   "channels": {
+    "a": "top",
+    "defaults": {
+     "top": "e8e2d4"
+    }
+   }
+  },
+  "top.off_shoulder": {
+   "channels": {
+    "a": "top",
+    "defaults": {
+     "top": "e88aa0"
+    }
+   }
+  },
+  "top.polo": {
+   "channels": {
+    "a": "top",
+    "b": "detail",
+    "defaults": {
+     "top": "3f8a5a",
+     "detail": "eeeae4"
+    }
+   }
+  },
+  "top.sweater": {
+   "channels": {
+    "a": "top",
+    "b": "detail",
+    "defaults": {
+     "top": "c86a3a",
+     "detail": "a0522c"
+    }
+   }
+  },
+  "top.tank": {
+   "channels": {
+    "a": "top",
+    "defaults": {
+     "top": "eeeae4"
+    }
+   }
+  },
+  "top.tee": {
+   "channels": {
+    "a": "top",
+    "defaults": {
+     "top": "d6403a"
+    }
+   }
+  },
+  "top.turtleneck": {
+   "channels": {
+    "a": "top",
+    "defaults": {
+     "top": "2e2e36"
+    }
+   }
+  },
+  "top.villager_shirt": {
+   "channels": {
+    "a": "top",
+    "defaults": {
+     "top": "e6e1da"
+    }
+   }
+  },
+  "top.vneck": {
+   "channels": {
+    "a": "top",
+    "defaults": {
+     "top": "3d6fb6"
+    }
+   }
+  },
+  "props.bed": {
+   "channels": {
+    "a": "blanket"
+   }
+  },
+  "props.desk": {
+   "channels": {}
+  }
+ }
+}
