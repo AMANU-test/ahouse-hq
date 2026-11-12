@@ -1552,6 +1552,24 @@ input:not([type=checkbox]):not([type=range]):focus,textarea:focus,select:focus{o
 .look-prev .avs{left:calc(50% - 13px);top:calc(100% - 12px - 26px);transform:scale(2.8)}
 #m-avatar{width:100%;box-sizing:border-box;resize:vertical}
 @media (prefers-reduced-motion:reduce){.avs{animation:none!important}}
+
+/* the designer inside the member editor */
+.avmk{margin-top:10px;padding:10px 12px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff22}
+.avmk[hidden]{display:none}
+.avmk h4{margin:12px 0 4px;font:800 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.avmk-views{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:8px;border-radius:10px;background:linear-gradient(#cfe6f7,#eaf3fa);margin-bottom:6px;position:sticky;top:0;z-index:3}
+.avmk-pv{position:relative;width:62px;height:78px;overflow:hidden}.avmk-pv.wide{width:112px}
+.avmk-pv .avs{left:calc(50% - var(--ax)*1px);top:calc(100% - 8px - var(--ay)*1px);transform:scale(2.2)}
+.avmk-pv.wide .avs{transform:scale(2.2)}
+.avmk-row{display:flex;align-items:center;gap:8px;margin:5px 0;font:600 13px var(--body)}
+.avmk-row>label{width:84px;flex:none;color:var(--mute);font-weight:700}
+.avmk-row select{flex:1;min-width:0;padding:6px;border-radius:8px}
+.avmk-row input[type=color]{width:36px;height:30px;padding:0;border:0;border-radius:6px;background:none;cursor:pointer}
+.avmk-sw{display:flex;gap:4px;flex-wrap:wrap}
+.avmk-s{width:22px;height:22px;border-radius:50%;border:2px solid #ffffff55;cursor:pointer;padding:0}
+.avmk-chips{display:flex;gap:6px;flex-wrap:wrap}
+.avmk-c{padding:5px 11px;border-radius:99px;border:1px solid #ffffff3a;background:#ffffff12;color:inherit;font:700 12px var(--body);cursor:pointer}
+.avmk-c.on{background:#6ca3ff;border-color:#6ca3ff;color:#fff}
 </style>
 
 <div class="app">
@@ -4268,33 +4286,89 @@ function avEditorHTML(f){
   const rid=(ui.view&&ui.view.id)||f._rid||(f._rid=uid()),raw=(f.avText||'').trim();
   if(!AVON)return `<div class="f">Avatar<span class="hint" style="font-weight:400">The avatar parts could not be loaded, so this can't be edited right now.</span></div>`;
   const code=raw?avClean(raw):avRandom(rid);
+  if(f.avOpen)setTimeout(avMakerMount,0);
   return `<div class="f">Avatar<div class="lookrow"><span class="look-prev">${code?avSpan(code,'walk',0,` id="av-pv" data-rid="${esc(rid)}"`):''}</span><div class="pick">
     <textarea id="m-avatar" rows="3" spellcheck="false" autocomplete="off" placeholder="Paste your avatar code here" style="font:12px ui-monospace,monospace">${esc(f.avText||'')}</textarea>
-    <div class="seg"><a class="btn ghost" href="avatar/maker.html" target="_blank" rel="noopener">Open the avatar maker</a><button type="button" class="btn ghost" data-act="avmaker">Use my maker avatar</button><button type="button" class="btn ghost" data-act="avrand">Randomise</button><button type="button" class="btn ghost" data-act="avclear">Automatic</button></div>
-    <span class="hint" id="av-msg" style="font-weight:400">${raw?(code?'Looks good. Press Save to keep it.':'That code does not look right. Copy it again from the maker.'):'Automatic: a look is picked for you until you paste a code from the maker.'}</span></div></div></div>`;
+    <div class="seg"><button type="button" class="btn${f.avOpen?'':' ghost'}" data-avopen="1">${f.avOpen?'Close the designer':'Design my avatar'}</button><button type="button" class="btn ghost" data-act="avrand">Randomise</button><button type="button" class="btn ghost" data-act="avclear">Automatic</button></div>
+    <div id="av-maker" class="avmk"${f.avOpen?'':' hidden'}></div>
+    <span class="hint" id="av-msg" style="font-weight:400">${raw?(code?'Looks good. Press Save to keep it.':'That code does not look right. Press Design my avatar to make one.'):'Automatic: a look is picked for you until you design one or paste a code.'}</span></div></div></div>`;
 }
 function avPreview(){
   const t=document.getElementById('m-avatar'),pv=document.getElementById('av-pv'),msg=document.getElementById('av-msg');if(!t||!pv||!msg)return;
   const raw=t.value.trim(),code=raw?avClean(raw):avRandom(pv.dataset.rid);
-  if(!code){msg.textContent='That code does not look right. Copy it again from the maker.';return}
+  if(!code){msg.textContent='That code does not look right. Press Design my avatar to make one.';return}
   avEnsure(code);pv.className=pv.className.replace(/\bav-\S+/,'av-'+avKey(code));
-  msg.textContent=raw?'Looks good. Press Save to keep it.':'Automatic: a look is picked for you until you paste a code from the maker.';
+  msg.textContent=raw?'Looks good. Press Save to keep it.':'Automatic: a look is picked for you until you design one or paste a code.';
 }
-document.addEventListener('input',e=>{if(e.target&&e.target.id==='m-avatar')avPreview()});
-/* the maker keeps what you are designing in this browser; turn it into a code */
-function avFromMaker(){
-  try{const s=JSON.parse(localStorage.getItem('ahq-avatar')||'null');if(!s||!s.build)return null;
-    const p=['body'];if(s.hair_back)p.push('hair_back.'+s.hair_back);if(s.hair_front)p.push('hair_front.'+s.hair_front);if(s.hair_side)p.push('hair_side.'+s.hair_side);if(s.ahoge)p.push('ahoge');
-    if(s.dress)p.push('dress.'+s.dress);else{if(s.top)p.push('top.'+s.top);if(s.bottom)p.push('bottom.'+s.bottom)}
-    for(const k of['outer','shoes'])if(s[k])p.push(k+'.'+s[k]);(s.acc||[]).forEach(a=>p.push('acc.'+a));
-    return avClean({build:s.build,parts:p,colors:s.colors||{}})}catch(e){return null}
-}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='m-avatar'){avPreview();const f=ui.view&&ui.view.draft;if(f&&f.avOpen&&avClean(e.target.value.trim()))avMakerMount()}});
 function avAction(a,v){
   if(a==='avrand'){v.draft.avText=JSON.stringify(avRandom('r'+Math.random()+Date.now()))}
   else if(a==='avclear'){v.draft.avText=''}
-  else if(a==='avmaker'){const c=avFromMaker();if(!c)return toast('Open the avatar maker first and design your avatar, then come back.');v.draft.avText=JSON.stringify(c)}
   renderView();
 }
+
+
+/* ---- the designer: the maker's controls, inside the member editor ---- */
+var AVMK=null;
+const AV_KINDS=[['top','Top'],['bottom','Bottom'],['dress','Dress'],['outer','Outerwear'],['shoes','Shoes']],AV_NICE=t=>t.replace(/_/g,' ').replace(/^./,c=>c.toUpperCase());
+function avPartsOf(build,prefix){const o=new Set();Object.values(AVMAN.builds[build]||{}).forEach(l=>l.forEach(p=>{if(p.startsWith(prefix+'.'))o.add(p.slice(prefix.length+1))}));return[...o].sort()}
+function avStateOf(code){
+  const s={build:code.build,hair_back:'',hair_front:'',hair_side:'',ahoge:false,top:'',dress:'',bottom:'',outer:'',shoes:'',acc:[],colors:Object.assign({skin:AV_SKINS[1],hair:AV_HAIRS[1],blanket:AV_BLANKETS[0]},code.colors)};
+  for(const p of code.parts){if(p==='ahoge'){s.ahoge=true;continue}const i=p.indexOf('.');if(i<0)continue;const k=p.slice(0,i),n=p.slice(i+1);
+    if(k==='acc')s.acc.push(n);else if(['hair_back','hair_front','hair_side','top','dress','bottom','outer','shoes'].includes(k))s[k]=n}
+  return s}
+function avCodeOfState(s){
+  const p=['body'];if(s.hair_back)p.push('hair_back.'+s.hair_back);if(s.hair_front)p.push('hair_front.'+s.hair_front);if(s.hair_side)p.push('hair_side.'+s.hair_side);if(s.ahoge)p.push('ahoge');
+  if(s.dress)p.push('dress.'+s.dress);else{if(s.top)p.push('top.'+s.top);if(s.bottom)p.push('bottom.'+s.bottom)}
+  for(const k of['outer','shoes'])if(s[k])p.push(k+'.'+s[k]);s.acc.forEach(a=>p.push('acc.'+a));
+  return avClean({build:s.build,parts:p,colors:s.colors})}
+const avHexOf=c=>c?(c[0]==='#'?c:'#'+c):'#808080';
+function avColorRow(label,key,fallback,swatches){
+  const cur=avHexOf(AVMK.colors[key]||fallback);
+  return `<div class="avmk-row"><label>${label}</label><input type="color" data-col="${key}" value="${cur}" aria-label="${label} colour">${swatches?`<span class="avmk-sw">${swatches.map(c=>`<button type="button" class="avmk-s" data-mk="color:${key}:${c}" style="background:${c}" title="${c}" aria-label="${c}"></button>`).join('')}</span>`:''}</div>`}
+function avSelectRow(label,key,opts){
+  return `<div class="avmk-row"><label>${label}</label><select data-sel="${key}" aria-label="${label}"><option value="">None</option>${opts.map(o=>`<option value="${o}"${AVMK[key]===o?' selected':''}>${AV_NICE(o)}</option>`).join('')}</select></div>`}
+function avPartColors(kind,name){
+  if(!name)return'';const part=kind+'.'+name,ch=(AVMAN.parts[part]||{}).channels||{},d=ch.defaults||{};
+  return(ch.a?avColorRow('&nbsp;&nbsp;colour',part+'#a',d[ch.a]):'')+(ch.b&&ch.b!=='skin'?avColorRow('&nbsp;&nbsp;accent',part+'#b',d[ch.b]):'')}
+function avMakerHTML(){
+  const s=AVMK,b=Object.keys(AVMAN.builds);
+  let h=`<div class="avmk-views" id="avmk-views"></div><h4>Body</h4><div class="avmk-chips">${b.map(x=>`<button type="button" class="avmk-c${s.build===x?' on':''}" data-mk="build:${x}">${AV_NICE(x)}</button>`).join('')}</div>`
+    +avColorRow('Skin','skin','#f2c29a',AV_SKINS)+'<h4>Hair</h4>'
+    +avSelectRow('Back','hair_back',avPartsOf(s.build,'hair_back'))+avSelectRow('Bangs','hair_front',avPartsOf(s.build,'hair_front'))+avSelectRow('Sides','hair_side',avPartsOf(s.build,'hair_side'))
+    +`<label class="avmk-row"><input type="checkbox" data-chk="ahoge"${s.ahoge?' checked':''}> Stray strand on top</label>`+avColorRow('Hair colour','hair','#4a2e1e',AV_HAIRS)+'<h4>Clothes</h4>';
+  for(const[k,label]of AV_KINDS){const o=avPartsOf(s.build,k);if(o.length)h+=avSelectRow(label,k,o)+avPartColors(k,s[k])}
+  h+=`<h4>Accessories</h4><div class="avmk-chips">${avPartsOf(s.build,'acc').map(a=>`<button type="button" class="avmk-c${s.acc.includes(a)?' on':''}" data-mk="acc:${a}">${AV_NICE(a)}</button>`).join('')}</div>`+s.acc.map(a=>avPartColors('acc',a)).join('')
+    +'<h4>Bed</h4>'+avColorRow('Blanket','blanket','#4a72c0',AV_BLANKETS);
+  return h}
+/* write the current design into the code box and the previews */
+function avMkRefresh(){
+  const code=avCodeOfState(AVMK),t=document.getElementById('m-avatar');if(!code||!t)return;
+  t.value=JSON.stringify(code);avPreview();avEnsure(code);
+  const v=document.getElementById('avmk-views');
+  if(v)v.innerHTML=[0,1,2,3].map(r=>`<span class="avmk-pv">${avSpan(code,'walk',r)}</span>`).join('')+`<span class="avmk-pv wide">${avSpan(code,'sleep',1)}</span>`}
+function avMakerMount(){
+  const host=document.getElementById('av-maker'),t=document.getElementById('m-avatar');if(!host||!t||!AVON)return;
+  const code=t.value.trim()?avClean(t.value.trim()):avRandom((document.getElementById('av-pv')||{dataset:{}}).dataset.rid||'x');
+  if(!code)return;
+  if(!AVMK||AVMK._src!==JSON.stringify(code))AVMK=Object.assign(avStateOf(code),{_src:JSON.stringify(code)});
+  host.innerHTML=avMakerHTML();
+  const fresh=()=>{const c=avCodeOfState(AVMK);AVMK._src=c?JSON.stringify(c):'';avMkRefresh()};
+  host.onclick=e=>{const b=e.target.closest('[data-mk]');if(!b)return;const[cmd,a,c]=b.dataset.mk.split(':');
+    if(cmd==='build'){AVMK.build=a;host.innerHTML=avMakerHTML()}
+    else if(cmd==='acc'){AVMK.acc=AVMK.acc.includes(a)?AVMK.acc.filter(x=>x!==a):[...AVMK.acc,a];host.innerHTML=avMakerHTML()}
+    else if(cmd==='color'){AVMK.colors[a]=c;const i=host.querySelector(`[data-col="${a}"]`);if(i)i.value=c}
+    fresh()};
+  host.onchange=e=>{const el=e.target;
+    if(el.dataset.sel){const k=el.dataset.sel;AVMK[k]=el.value;if(k==='dress'&&el.value){AVMK.top='';AVMK.bottom=''}if((k==='top'||k==='bottom')&&el.value)AVMK.dress='';host.innerHTML=avMakerHTML();fresh()}
+    else if(el.dataset.chk){AVMK[el.dataset.chk]=el.checked;fresh()}};
+  host.oninput=e=>{const el=e.target;if(el.dataset.col){AVMK.colors[el.dataset.col]=el.value;fresh()}};
+  fresh();
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-avopen]');if(!b)return;
+  const v=ui.view;if(!v||!v.draft)return;const f=v.draft;f.avOpen=!f.avOpen;
+  const host=document.getElementById('av-maker');if(host){host.hidden=!f.avOpen;if(f.avOpen)avMakerMount();else host.innerHTML=''}
+  b.textContent=f.avOpen?'Close the designer':'Design my avatar';b.classList.toggle('ghost',!f.avOpen)});
 
 /* start up: load the kit, build every member's sheets once, then redraw the map with the new figures */
 (function(){
