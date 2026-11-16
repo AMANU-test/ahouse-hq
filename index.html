@@ -1663,6 +1663,19 @@ details.deploy-box .dp-list{display:grid;gap:6px;padding:0 12px 10px;max-height:
 .mm.dragging .mm-node.drop,.mm.dragging .mm-root.drop{outline:3px solid #ffd24a;outline-offset:3px;background-color:#ffd24a22}
 .mm-node.drop::after,.mm-root.drop::after{content:attr(data-hint);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;background:#ffd24a;color:#1b0f00;font:800 11px var(--body);padding:4px 10px;border-radius:99px;z-index:5;pointer-events:none}
 .mm-node.dragsrc{opacity:.4}
+
+/* team map: the + on a clicked box (replaces the little icons that used to appear at the corner) */
+.mm-acts{display:none!important}
+.mm-plus{display:none;position:absolute;left:50%;top:100%;transform:translate(-50%,3px);z-index:7}
+.mm-open>.mm-plus,.mm-node.mm-open .mm-plus,.mm-root.mm-open .mm-plus{display:block}
+.mm-plusb{display:grid;place-items:center;width:28px;height:28px;padding:0;border-radius:50%;border:2px solid #fff;background:#3563c9;color:#fff;font:800 20px/1 var(--body);cursor:pointer;box-shadow:0 3px 10px #0008}
+.mm-plusb:hover{background:#4f86d9}
+.mm-menu{display:none;position:absolute;left:36px;top:-1px;gap:6px;white-space:nowrap}
+.mm-menuon>.mm-plus .mm-menu,.mm-open.mm-menuon .mm-menu{display:flex}
+.mm-menu button{padding:6px 12px;border-radius:99px;border:1px solid #ffffff55;background:#1c2b4d;color:#fff;font:800 12px var(--body);cursor:pointer;box-shadow:0 3px 10px #0007}
+.mm-menu button:hover{background:#3563c9}.mm-menu button.del{background:#5a1f26;border-color:#e0707a}.mm-menu button.del:hover{background:#d6403a}
+.mm-node.mm-open,.mm-root.mm-open{z-index:6}
+.mm-root{cursor:pointer}
 </style>
 
 <div class="app">
@@ -3483,18 +3496,18 @@ function mindmapHTML(p,pid){
     else ch.forEach(c=>{const r=pos[c],x1=a.x+a.w/2,y1=a.y+a.h,x2=r.x+r.w/2,y2=r.y,ym=(y1+y2)/2;links+=line(`M${x1} ${y1}C${x1} ${ym} ${x2} ${ym} ${x2} ${y2}`,q==='root'&&!teams[c]?'#5b93ee':colOf(c))})});
   const count=id=>{let n=0;const walk=x=>(kids[x]||[]).forEach(c=>{if(!teams[c])n++;walk(c)});walk(id);return n};
   const node=id=>{const q=pos[id],sel=ui.osel===id;
-    if(teams[id])return `<div class="mm-node team${sel?' sel':''}" data-id="${id}" data-pid="${pid}" data-drop="mmnode" data-hint="Add to ${esc(teams[id].name)}"${ed?' draggable="true"':''} style="left:${q.x}px;top:${q.y}px"><i class="mm-ico mm-grip" title="${ed?'Drag to move this team':''}">\u25A6</i><span class="mm-tx">${ed?`<input class="mm-tname" value="${esc(teams[id].name)}" data-pid="${pid}" data-id="${id}" maxlength="40" spellcheck="false" autocomplete="off" aria-label="Team name (click to rename)" title="Click to rename">`:`<b>${esc(teams[id].name)}</b>`}<em>${count(id)} ${count(id)===1?'person':'people'}</em></span>${ed?`<span class="mm-acts"><button type="button" data-mm="add" data-pid="${pid}" data-id="${id}" title="Add people to this team" aria-label="Add people to this team">+\u{1F464}</button><button type="button" data-mm="team" data-pid="${pid}" data-id="${id}" title="Add a team inside this one" aria-label="Add a team inside this one">+\u25A6</button><button type="button" class="del" data-mm="del" data-pid="${pid}" data-id="${id}" title="Delete this team (its people stay)" aria-label="Delete this team">\u2715</button></span>`:''}</div>`;
+    if(teams[id])return `<div class="mm-node team${sel?' sel':''}" data-id="${id}" data-pid="${pid}" data-drop="mmnode" data-hint="Add to ${esc(teams[id].name)}"${ed?' draggable="true"':''} style="left:${q.x}px;top:${q.y}px"><i class="mm-ico mm-grip" title="${ed?'Drag to move this team':''}">\u25A6</i><span class="mm-tx">${ed?`<input class="mm-tname" value="${esc(teams[id].name)}" data-pid="${pid}" data-id="${id}" maxlength="40" spellcheck="false" autocomplete="off" aria-label="Team name (click to rename)" title="Click to rename">`:`<b>${esc(teams[id].name)}</b>`}<em>${count(id)} ${count(id)===1?'person':'people'}</em></span>${ed?mmPlus(pid,id,true):''}</div>`;
     const m=st.members[id],s=statusOf(id,m);
     return `<button type="button" class="mm-node${par[id]==='root'?' lead':''} ${s}${sel?' sel':''}" data-act="obox" data-id="${id}" data-pid="${pid}" data-drop="mmnode" data-hint="Report to ${esc(m.name.split(' ')[0])}"${ed?' draggable="true"':''} style="left:${q.x}px;top:${q.y}px;--dc:${deptColor(m.dept)}" title="${esc(m.name+' · '+SL[s])}"><span class="mm-av">${figure(m,id)}</span><span class="mm-tx"><b>${esc(m.name)}</b><em>${esc(m.title||TIERS[m.stars||2])}</em></span>${par[id]==='root'?'<i class="mm-crown">♛</i>':''}</button>`};
   const nteams=Object.keys(teams).length,r0=pos.root;
-  const root=`<div class="mm-root" data-drop="mmroot" data-hint="Make top level" data-pid="${pid}" style="left:${r0.x}px;top:0;width:${RW_}px"><b>${esc(p.name)}</b><em>${T.team.length} ${T.team.length===1?'person':'people'}${nteams?' · '+nteams+(nteams===1?' team':' teams'):''}</em></div>`;
+  const root=`<div class="mm-root" data-drop="mmroot" data-hint="Make top level" data-pid="${pid}" style="left:${r0.x}px;top:0;width:${RW_}px"><b>${esc(p.name)}</b><em>${T.team.length} ${T.team.length===1?'person':'people'}${nteams?' · '+nteams+(nteams===1?' team':' teams'):''}</em>${ed?mmPlus(pid,'root',false):''}</div>`;
   const sel=ui.osel&&(teams[ui.osel]||T.team.includes(ui.osel))?ui.osel:null,selTeam=sel&&teams[sel],selM=sel&&!selTeam?st.members[sel]:null;
   const add=ui.mmadd&&ui.mmadd.pid===pid&&ed?ui.mmadd:null;
   const under=sel?`<button class="btn ghost" data-act="mmadd" data-pid="${pid}" data-parent="${sel}">+ Add person under</button><button class="btn ghost" data-act="mmaddteam" data-pid="${pid}" data-parent="${sel}">+ Add team under</button>`:'';
   const bar=!sel?'':selTeam?''
     :`<div class="ob-sel"><b>${esc(selM.name)}</b> selected<button class="btn ghost" data-act="oprofile">Open profile</button>${ed?under+(par[sel]!=='root'?`<button class="btn ghost" data-act="mmlead" data-pid="${pid}">Make top level</button>`:'')+`<button class="btn danger" data-act="oremove" data-pid="${pid}">Remove from project</button>`:''}<button class="btn ghost" data-act="odesel">Done</button></div>`;
   return `<div class="ob">
-    ${ed?`<div class="ob-bar"><button class="btn primary" data-act="mmadd" data-pid="${pid}" data-parent="sel">+ Add people</button><button class="btn ghost" data-act="mmaddteam" data-pid="${pid}" data-parent="sel">+ Add team</button><span class="hint">Click a team name to rename it. Hover a team for + and \u2715. Drag any box onto another one to move it under them.</span><span class="saved-pill">${savedPill()}</span></div>`:''}
+    ${ed?`<div class="ob-bar"><button class="btn primary" data-act="mmadd" data-pid="${pid}" data-parent="sel">+ Add people</button><button class="btn ghost" data-act="mmaddteam" data-pid="${pid}" data-parent="sel">+ Add team</button><span class="hint">Click the project or a team to get a + for adding teams and people. Click a team name to rename it. Drag any box onto another one to move it under them.</span><span class="saved-pill">${savedPill()}</span></div>`:''}
     ${bar}
     ${add?`<div class="ob-sel mm-adding">Adding under ${esc(nameOf(add.parent))}. Tap people below.<button class="btn primary" data-act="mmdone">Done</button></div>`:''}
     <div class="mm-scroll"><div class="mm" style="width:${W}px;height:${H}px"><svg width="${W}" height="${H}" aria-hidden="true">${links}</svg>${root}${Object.keys(pos).filter(i=>i!=='root').map(node).join('')}</div></div>
@@ -4775,4 +4788,15 @@ document.addEventListener('click',async e=>{
 },true);
 document.addEventListener('dragstart',e=>{const n=e.target.closest&&e.target.closest('.mm-node');if(!n)return;n.classList.add('dragsrc');const m=n.closest('.mm');if(m)m.classList.add('dragging')},true);
 document.addEventListener('dragend',()=>{document.querySelectorAll('.mm.dragging').forEach(m=>m.classList.remove('dragging'));document.querySelectorAll('.mm-node.dragsrc').forEach(n=>n.classList.remove('dragsrc'))},true);
+
+/* the + that appears on a clicked project or team in the team map: opens a small menu to add a team or a person under it */
+function mmPlus(pid,id,team){
+  return `<span class="mm-plus"><button type="button" class="mm-plusb" aria-label="Add a team or a person here" title="Add under this ${team?'team':'project'}">+</button><span class="mm-menu"><button type="button" data-mm="team" data-pid="${pid}" data-id="${id}">+ Team</button><button type="button" data-mm="add" data-pid="${pid}" data-id="${id}">+ Person</button>${team?`<button type="button" class="del" data-mm="del" data-pid="${pid}" data-id="${id}" title="Delete this team (its people stay)">Delete team</button>`:''}</span></span>`}
+document.addEventListener('click',e=>{
+  const n=e.target.closest&&e.target.closest('.mm-node.team,.mm-root');
+  document.querySelectorAll('.mm-open').forEach(x=>{if(x!==n)x.classList.remove('mm-open','mm-menuon')});
+  if(!n||!n.querySelector('.mm-plus'))return;
+  n.classList.add('mm-open');
+  if(e.target.closest('.mm-plusb'))n.classList.toggle('mm-menuon');
+});
 </script>
