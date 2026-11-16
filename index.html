@@ -1628,6 +1628,7 @@ input:not([type=checkbox]):not([type=range]):focus,textarea:focus,select:focus{o
 .rw.site.drag{opacity:.92;filter:drop-shadow(0 14px 12px #0007)}.rw.site.drag>.hit{cursor:grabbing}
 html.unl .rw.site>.hit{cursor:grab}
 .an,.av-prev{background-clip:padding-box!important}
+html.unl .rw.site>.hit{touch-action:none}
 </style>
 
 <div class="app">
@@ -4100,9 +4101,9 @@ setInterval(()=>{const now=Date.now(),dt=Math.min(.25,(now-commT)/1000);commT=no
   Object.entries(COMM).forEach(([id,c])=>{
     if(document.querySelector('#cm'+id+' .tok:hover'))return;   // stand still while the pointer is on them so they can be tapped
     if(!c.walk){c.wait-=dt;if(c.wait>0)return;if(c.pids.length<2){c.wait=9;return}c.k=(c.cur+1)%c.pids.length;c.walk=true}
-    const t=commSpot(c.pids[c.k],id);if(!t){c.walk=false;return}
-    const dx=t.u-c.u,dy=t.v-c.v,d=Math.hypot(dx,dy),step=46*dt;
-    if(d<=step){c.u=t.u;c.v=t.v;c.cur=c.k;c.walk=false;c.wait=10+Math.random()*12}
+    const t=commSpot(c.pids[c.k],id);if(!t){c.walk=false;c.path=null;return}if(!c.path)c.path=commPath(c,t,c.pids[c.cur],c.pids[c.k]);const w=c.path.length?c.path[0]:t;
+    const dx=w.u-c.u,dy=w.v-c.v,d=Math.hypot(dx,dy),step=46*dt;
+    if(d<=step){c.u=w.u;c.v=w.v;if(c.path.length)c.path.shift();if(!c.path.length){c.cur=c.k;c.walk=false;c.path=null;c.wait=10+Math.random()*12}}
     else{c.u+=dx/d*step;c.v+=dy/d*step;const mx=(dx+dy)*K2,my=(dy-dx)*K2*.5;c.dir=Math.abs(mx)>Math.abs(my)?(mx>0?'right':'left'):(my>0?'down':'up')}
   });commPaint()},70);
 const HQU=2*HQ.mg+3*RWD+2*HQ.gw,HQV=2*HQ.mg+2*RHD+HQ.gw;
@@ -4640,7 +4641,7 @@ setTimeout(()=>{
     const vg=SITEREG.__vg;if(vg&&hit(vg.x,vg.y,vg.X1,vg.Y1))return true;return false};
   floors.addEventListener('pointerdown',e=>{
     const h=e.target.closest?.('.rw.site > .hit');if(!h||e.button!==0||!ui.unlocked)return;
-    const c=h.parentElement,id=c.dataset.id,s=SITEREG[id];if(!s)return;
+    const c=h.parentElement,id=c.dataset.id,s=SITEREG[id];if(!s)return;e.stopPropagation();   // the map must not start panning
     dg={c,id,s,x:e.clientX,y:e.clientY,nx:s.x,ny:s.y,sc:sc(),sl:map.scrollLeft,st:map.scrollTop,moved:false,ok:true,z:c.style.zIndex};
   },true);
   addEventListener('pointermove',e=>{
@@ -4664,4 +4665,31 @@ setTimeout(()=>{
   addEventListener('pointerup',end);addEventListener('pointercancel',end);
   floors.addEventListener('click',e=>{const h=e.target.closest?.('.rw.site > .hit');if(h&&h.parentElement.dataset.moved){e.stopPropagation();e.preventDefault()}},true);
 },0);
+
+/* ---------- people walking between project sites go round the other offices (and the HQ) instead of straight through or behind them ---------- */
+function commPath(a,b,fromId,toId){
+  const R=[];
+  for(const k in SITEREG){if(k==='__vg'||k===fromId||k===toId)continue;const s=SITEREG[k];R.push([s.x-26,s.y-160,s.x+s.vt.W+26,s.y+s.vt.H+26])}
+  R.push([-34,-34,HQ.U+34,HQ.V+34]);const vg=SITEREG.__vg;if(vg)R.push([vg.x-10,vg.y-10,vg.X1+10,vg.Y1+10]);
+  const C=26,pad=420,x0=Math.min(a.u,b.u)-pad,y0=Math.min(a.v,b.v)-pad,nx=Math.ceil((Math.abs(a.u-b.u)+2*pad)/C),ny=Math.ceil((Math.abs(a.v-b.v)+2*pad)/C);
+  const cell=(u,v)=>[Math.min(nx-1,Math.max(0,Math.floor((u-x0)/C))),Math.min(ny-1,Math.max(0,Math.floor((v-y0)/C)))];
+  const blocked=(i,j)=>{const u=x0+(i+.5)*C,v=y0+(j+.5)*C;return R.some(r=>u>r[0]&&u<r[2]&&v>r[1]&&v<r[3])};
+  const [si,sj]=cell(a.u,a.v),[gi,gj]=cell(b.u,b.v),key=(i,j)=>j*nx+i,open=[[0,si,sj]],g=new Map([[key(si,sj),0]]),from=new Map();
+  const h=(i,j)=>Math.hypot(i-gi,j-gj);let found=false;
+  for(let n=0;open.length&&n<20000;n++){
+    let bi=0;for(let q=1;q<open.length;q++)if(open[q][0]<open[bi][0])bi=q;const [,i,j]=open.splice(bi,1)[0];
+    if(i===gi&&j===gj){found=true;break}
+    for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const ni=i+di,nj=j+dj;if(ni<0||nj<0||ni>=nx||nj>=ny)continue;
+      if(!(ni===gi&&nj===gj)&&!(ni===si&&nj===sj)&&blocked(ni,nj))continue;
+      const nc=g.get(key(i,j))+(di&&dj?1.41:1),k=key(ni,nj);if(!g.has(k)||nc<g.get(k)){g.set(k,nc);from.set(k,[i,j]);open.push([nc+h(ni,nj),ni,nj])}}
+  }
+  if(!found)return[b];
+  const pts=[];let cur=[gi,gj];while(cur&&!(cur[0]===si&&cur[1]===sj)){pts.push({u:x0+(cur[0]+.5)*C,v:y0+(cur[1]+.5)*C});cur=from.get(key(cur[0],cur[1]))}
+  pts.reverse();pts[pts.length-1]={u:b.u,v:b.v};
+  /* straighten: skip waypoints that can be reached in a straight line */
+  const clear=(p,q)=>{const n=Math.ceil(Math.hypot(q.u-p.u,q.v-p.v)/12);for(let s=1;s<n;s++){const u=p.u+(q.u-p.u)*s/n,v=p.v+(q.v-p.v)*s/n;if(R.some(r=>u>r[0]&&u<r[2]&&v>r[1]&&v<r[3]))return false}return true};
+  const out=[];let from0={u:a.u,v:a.v},i=0;
+  while(i<pts.length){let j=pts.length-1;while(j>i&&!clear(from0,pts[j]))j--;out.push(pts[j]);from0=pts[j];i=j+1}
+  return out.length?out:[b];
+}
 </script>
