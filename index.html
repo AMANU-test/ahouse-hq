@@ -1629,6 +1629,16 @@ input:not([type=checkbox]):not([type=range]):focus,textarea:focus,select:focus{o
 html.unl .rw.site>.hit{cursor:grab}
 .an,.av-prev{background-clip:padding-box!important}
 html.unl .rw.site>.hit{touch-action:none}
+
+/* Deploy to projects: a fold-away list */
+details.deploy-box{display:block;padding:0}
+details.deploy-box>summary{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;list-style:none;font:800 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);border-radius:14px}
+details.deploy-box>summary::-webkit-details-marker{display:none}
+details.deploy-box>summary::before{content:"\25B8";font-size:12px;transition:transform var(--t2) var(--ease-out)}
+details.deploy-box[open]>summary::before{transform:rotate(90deg)}
+details.deploy-box>summary em{margin-left:auto;font-style:normal;letter-spacing:0;text-transform:none;font-weight:700;color:#ffc48a}
+details.deploy-box>summary:hover{color:var(--ink)}
+details.deploy-box .dp-list{display:grid;gap:6px;padding:0 12px 10px;max-height:min(40vh,320px);overflow:auto}
 </style>
 
 <div class="app">
@@ -2548,7 +2558,7 @@ function badgeShelf(id){
   return `<div class="shelf"><div class="pd-h">Badges \u00B7 ${b.length}</div><div class="bd-row">${b.map(p=>`<span class="bd">${medal(p,38)}<span class="ell">${esc(p.name)}</span>${pres?`<button type="button" class="bd-x" data-act="bdgdel" data-pid="${p.id}" data-id="${id}" title="Remove this badge" aria-label="Remove badge ${esc(p.name)}">\u00D7</button>`:''}</span>`).join('')}${pres?`<button type="button" class="bd-plus" data-act="bdghist" data-id="${id}" aria-expanded="${open}" title="History of completed projects">${open?'\u2212':'+'}</button>`:''}</div>${b.length||pres?'':'<p class="hint" style="margin:6px 0 0">No badges yet. Finish a project to earn one.</p>'}${hist}</div>`;
 }
 function deployBoxHTML(id){const ps=projects().filter(p=>!p.done);
-  return `<div class="deploy-box"><b>Deploy to projects</b>${ps.length?ps.map(p=>{const on=(p.members||[]).includes(id);return `<button type="button" class="dp-opt${on?' on':''}" data-act="deploytoggle" data-pid="${p.id}" data-id="${id}"><i style="background:${projColor(p.id)}"></i><span>${esc(p.name)}</span><em>${on?'Deployed \u2713':'Deploy'}</em></button>`}).join(''):'<p class="hint" style="margin:0">No active projects yet.</p>'}<span class="hint">A person can be on several projects at once and will walk between their sites.</span></div>`;
+  return `<details class="deploy-box"${ui.dpOpen?' open':''}><summary>Deploy to projects<em>${ps.filter(p=>(p.members||[]).includes(id)).length} deployed</em></summary><div class="dp-list">${ps.length?ps.map(p=>{const on=(p.members||[]).includes(id);return `<button type="button" class="dp-opt${on?' on':''}" data-act="deploytoggle" data-pid="${p.id}" data-id="${id}"><i style="background:${projColor(p.id)}"></i><span>${esc(p.name)}</span><em>${on?'Deployed \u2713':'Deploy'}</em></button>`}).join(''):'<p class="hint" style="margin:0">No active projects yet.</p>'}<span class="hint">A person can be on several projects at once and will walk between their sites.</span></div></details>`;
 }
 function crewCard(id){
   const m=st.members[id],s=statusOf(id,m),t=taskOf(id),d=st.depts[m.dept];
@@ -3198,8 +3208,8 @@ function calGrid(y,m,evs,dayAct){
 const calBar=(scope,pid,cm,leg)=>`<div class="cal-bar"><button class="btn ghost" data-act="calnav" data-d="-1" data-scope="${scope}" data-pid="${pid}" aria-label="Previous month">‹</button><h4>${MONTHS[cm.m]} ${cm.y}</h4><button class="btn ghost" data-act="calnav" data-d="1" data-scope="${scope}" data-pid="${pid}" aria-label="Next month">›</button><button class="btn ghost" data-act="calnav" data-d="0" data-scope="${scope}" data-pid="${pid}">Today</button><span class="cal-leg">${leg}</span></div>`;
 function projCalHTML(p,pid){
   const cm=(ui.pcal=ui.pcal||{})[pid]||(ui.pcal[pid]=(()=>{const d=p.due?new Date(p.due+'T00:00'):new Date();return{y:d.getFullYear(),m:d.getMonth()}})()),t=today(),evs=[];
-  if(p.start&&p.due)evs.push({label:'Project',start:p.start<=p.due?p.start:p.due,end:p.start<=p.due?p.due:p.start,color:'#b89a3a',cls:'dim',title:p.name+' (project dates)'});
-  if(p.due)evs.push({label:'★ '+p.name,start:p.due,end:p.due,color:'#f0b429',cls:'gold',title:'Due: '+p.name});
+  if(!p.ext&&p.start&&p.due)evs.push({label:'Project',start:p.start<=p.due?p.start:p.due,end:p.start<=p.due?p.due:p.start,color:'#b89a3a',cls:'dim',title:p.name+' (project dates)'});
+  if(p.due&&!p.ext)evs.push({label:'★ '+p.name,start:p.due,end:p.due,color:'#f0b429',cls:'gold',title:'Due: '+p.name});
   (p.deliverables||[]).forEach(x=>{const s0=x.start||x.due,e0=x.due||x.start;if(!s0)return;const s=s0<=e0?s0:e0,e=s0<=e0?e0:s0,os=ownersOf(x).filter(i=>st.members[i]),late=!x.done&&e<t;
     evs.push({id:x.id,label:(x.done?'✓ ':'')+x.name+(os.length?' · '+os.map(firstName).join(', '):''),start:s,end:e,color:x.done?'#2fa866':late?'#f0732b':taskColor(os),cls:x.done?'dim':'',act:'caltask',title:x.name+(os.length?' · '+os.map(i=>st.members[i].name).join(', '):'')+' · '+fmtD(s)+(s!==e?' to '+fmtD(e):'')+(x.done?' (done)':late?' (overdue)':'')})});
   const leg=[['#4a86e8','Unassigned'],['linear-gradient(90deg,#e07a5f,#4f86d9,#3fa37c)','Department colour'],['#2fa866','Done'],['#f0732b','Overdue'],['#f0b429','Due date']].map(([c,l])=>`<span style="--ec:${c}"><i></i>${l}</span>`).join('');
@@ -3380,7 +3390,7 @@ function renderProjSpace(){
 function renderCalendar(){
   const cm=ui.gcal||(ui.gcal=thisMonth()),ps=projects().filter(p=>!p.ext),t=today();
   const evs=[],nodate=[];
-  ps.forEach(p=>{const e0=p.due||p.start;if(!e0){nodate.push(p);return}const s0=p.start||p.due,s=s0<=e0?s0:e0,e=s0<=e0?e0:s0;
+  ps.forEach(p=>{if(p.ext)return;const e0=p.due||p.start;if(!e0){nodate.push(p);return}const s0=p.start||p.due,s=s0<=e0?s0:e0,e=s0<=e0?e0:s0;
     evs.push({id:p.id,label:(p.done?'✓ ':'')+p.name,start:e,end:e,span:[s,e],color:p.done?'#6f6a8a':`hsl(${hue(p.name)} 60% 50%)`,cls:p.done?'dim':'',act:'project',title:p.name+' · '+(s!==e?'started '+fmtD(s)+', due '+fmtD(e):fmtD(e))+(p.done?' (completed)':'')})});
   calpage.innerHTML=`<div class="pg-h"><h2>Calendar</h2><span class="hint">A-HOUSE events. Tap one to open its project space.${ui.unlocked?' Tap an empty day to start a new event there.':''}</span></div>
     <div class="ps-body">${calBar('g','',cm,'<span>Each event sits on its due date. Hover one to see when it started.</span><span style="--ec:#6f6a8a"><i></i>Completed</span>')}${calGrid(cm.y,cm.m,evs,ui.unlocked?'gcalday':'')}
@@ -3646,7 +3656,7 @@ ${avEditorHTML(f)}
       const dd=p.due?new Date(p.due+'T00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})+(p.done?'':' · '+dueText(p).toLowerCase()):'No date';
       h=`<div class="ph"><h2>${esc(p.name)}</h2>${p.done?medal(p,34):''}<span class="pd-state ${scl}">${stt}</span><button class="x" data-act="close" aria-label="Close">×</button></div>
         ${p.desc?`<p class="desc" style="font-size:15px;margin:0">${esc(p.desc)}</p>`:''}
-        <div class="pd-meta"><span class="pd-chip"><b>${pct}%</b> done</span>${v.dueEdit?`<form class="pd-chip pd-dueform" data-form="duesave" data-pid="${v.id}"><label>Due <input type="date" value="${esc(p.due||'')}" aria-label="Due date"></label><button class="btn primary pd-sv">Save</button><button type="button" class="btn ghost pd-sv" data-act="pdueclose">Cancel</button>${p.due?'<button type="button" class="btn ghost pd-sv" data-act="pdueclear">No date</button>':''}</form>`:`<button type="button" class="pd-chip pd-edit" data-act="pdue" data-pid="${v.id}" title="Change the due date">Due <b>${dd}</b><i>\u270E</i></button>`}<span class="pd-chip"><b>${team.length}</b> crew</span><span class="pd-btns"><button class="btn pd-open" data-act="project" data-id="${v.id}">Open project space \u2192</button>${canEd(p)?`<button class="btn primary" data-act="editproject" data-id="${v.id}">Edit project</button>`:''}</span></div>
+        <div class="pd-meta"><span class="pd-chip"><b>${pct}%</b> done</span>${p.ext?'':v.dueEdit?`<form class="pd-chip pd-dueform" data-form="duesave" data-pid="${v.id}"><label>Due <input type="date" value="${esc(p.due||'')}" aria-label="Due date"></label><button class="btn primary pd-sv">Save</button><button type="button" class="btn ghost pd-sv" data-act="pdueclose">Cancel</button>${p.due?'<button type="button" class="btn ghost pd-sv" data-act="pdueclear">No date</button>':''}</form>`:`<button type="button" class="pd-chip pd-edit" data-act="pdue" data-pid="${v.id}" title="Change the due date">Due <b>${dd}</b><i>\u270E</i></button>`}<span class="pd-chip"><b>${team.length}</b> crew</span><span class="pd-btns"><button class="btn pd-open" data-act="project" data-id="${v.id}">Open project space \u2192</button>${canEd(p)?`<button class="btn primary" data-act="editproject" data-id="${v.id}">Edit project</button>`:''}</span></div>
         <span class="bar"><span class="fill" style="width:${Math.max(2,pct)}%"></span></span>
         <div class="pd-h">Crew</div>
         ${team.length?`<div class="pd-crew">${team.map(crewCard).join('')}</div>`:'<p class="hint" style="margin:0">No one on this project yet.</p>'}
@@ -4391,11 +4401,11 @@ function avEnsure(code){
   }).catch(()=>{});
 }
 const avSpan=(code,anim,row,extra)=>{avEnsure(code);return `<span class="avs av-${avKey(code)} a-${anim} r-${row}"${extra||''}></span>`};
-/* the figure inside a map pin: asleep on a bed, busy at a desk (seen from behind), or standing */
+/* the figure inside a map pin: asleep on a bed, busy at a desk (facing front), or standing */
 function pinSpr(m,s,pos){
   if(!AVON)return `<span class="spr ${npcLook(m,m.id).b} lk-${npcKey(npcLook(m,m.id))} c-${s==='busy'?'idle_up':'idle_down'}"></span>`;
   const code=avOf(m,m.id);
-  return pos&&pos.sleep?avSpan(code,'sleep',1):s==='busy'?avSpan(code,'work',2):avSpan(code,'idle',0);
+  return pos&&pos.sleep?avSpan(code,'sleep',1):s==='busy'?avSpan(code,'work',0):avSpan(code,'idle',0);
 }
 function commSpr(m,L){return AVON?avSpan(avOf(m,m.id),'idle',0):`<span class="spr ${L.b} lk-${npcKey(L)} c-idle_down"></span>`}
 /* the walking code gives clips like walk_left, idle_up or idle_right_classic; the avatar sheets have one row per direction */
@@ -4692,4 +4702,7 @@ function commPath(a,b,fromId,toId){
   while(i<pts.length){let j=pts.length-1;while(j>i&&!clear(from0,pts[j]))j--;out.push(pts[j]);from0=pts[j];i=j+1}
   return out.length?out:[b];
 }
+
+/* the "Deploy to projects" box remembers whether it was left open */
+document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.classList&&d.classList.contains('deploy-box'))ui.dpOpen=d.open},true);
 </script>
