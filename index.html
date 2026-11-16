@@ -1573,7 +1573,7 @@ input:not([type=checkbox]):not([type=range]):focus,textarea:focus,select:focus{o
 
 /* ===== Nov 16 feedback ===== */
 /* profile pictures: real circles (they were 24 x 26 ovals) */
-.face{height:auto!important;aspect-ratio:1/1;border-radius:50%!important;flex:none;background-size:cover;background-position:center;background-repeat:no-repeat;image-rendering:auto}
+.face{height:auto!important;aspect-ratio:1/1;border-radius:50%!important;background-clip:padding-box!important;flex:none;background-size:cover;background-position:center;background-repeat:no-repeat;image-rendering:auto}
 .face.evdot{background:#ffffff26}
 /* status legend: Deployed is one chip with a menu */
 .lgdd{position:relative;display:inline-flex}
@@ -1624,6 +1624,10 @@ input:not([type=checkbox]):not([type=range]):focus,textarea:focus,select:focus{o
 .lmk{position:absolute;display:block;max-width:none;image-rendering:pixelated;pointer-events:none;background-repeat:no-repeat;background-position:0 0;z-index:3;animation:lmkp var(--d,1s) steps(var(--n)) infinite}
 @keyframes lmkp{to{background-position-x:calc(var(--cw)*var(--n)*-1)}}
 @media (prefers-reduced-motion:reduce){.lmk{animation:none}}
+
+.rw.site.drag{opacity:.92;filter:drop-shadow(0 14px 12px #0007)}.rw.site.drag>.hit{cursor:grabbing}
+html.unl .rw.site>.hit{cursor:grab}
+.an,.av-prev{background-clip:padding-box!important}
 </style>
 
 <div class="app">
@@ -2978,7 +2982,7 @@ function render(){
   const counts={free:0,busy:0,dep:0,low:0,away:0};ms.forEach(m=>counts[statusOf(m.id,m)]++);
   const ps=projects();
   modechip.innerHTML=!ui.live&&ui.loaded?`<span class="chip" title="This view isn't connected to A-HOUSE's saved data, so changes disappear on reload. Open the page on claude.ai while signed in.">Preview · not saved</span>`:ui.live&&ui.loaded?'<span class="chip online">Online</span>':'';
-  lockbtn.className='lockbtn'+(ui.unlocked?' on':'');
+  lockbtn.className='lockbtn'+(ui.unlocked?' on':'');document.documentElement.classList.toggle('unl',!!ui.unlocked);
   lockbtn.innerHTML=ui.unlocked?`${lockIcon(true)} ${ui.level==='chief'?'Chief':'President'} · Lock`:`${lockIcon(false)} Sign in`;
   note.innerHTML=ui.err?`<div class="note">The house data can't be reached right now (${esc(ui.err)}). Reload the page later.</div>`
     :ui.slow?`<div class="note">Still reaching the house data. It may be out of date.</div>`
@@ -3005,7 +3009,7 @@ function render(){
     const nsx=sites.filter(p=>!(p.ext&&hq)).length,vil=villageLayout(ps.filter(p=>p.done),GAP+Math.min(2,nsx)*(cw+GAP)+(nsx?40:0),campTop+GAP);
     const items=ds.map((d,i)=>({k:'dept',id:d.id,d,crew:crews[i],tier:dtiers[i],x:hq?MG+(i%3)*(HQ.lotw+HQ.gw):MG+(i%cols)*(RW+GW),y:hq?MG+HQ.execlot+HQ.gw+Math.floor(i/3)*(HQ.loth+HQ.gw):MG+Math.floor(i/cols)*(RHD+GW)}))
       .concat(hq?[{k:'exec',id:'exec',crew:execCrew,tier:etier,x:HQ.mg,y:MG},{k:'rest',id:'rest',crew:restCrew,x:HQ.mg+HQ.execw+HQ.gw,y:MG,rd:{w:340,h:260,url:TILES.restroom,tox:RESTT.ox,toy:RESTT.oy,tw:RESTT.w,th:RESTT.h,anim:'rest'}}]:[])
-      .concat(sites.map((p,i)=>{const side=p.ext&&hq,g=hq?sites.slice(0,i).filter(q=>!q.ext).length:i;return side?{k:'site',id:p.id,p,crew:screws[i],tier:vts[i],x:HQ.U+150,y:MG+340+sites.slice(0,i).filter(q=>q.ext).length*(ch+GAP+90)}:{k:'site',id:p.id,p,crew:screws[i],tier:vts[i],x:GAP+(g%2)*(cw+GAP),y:campTop+GAP+120+Math.floor(g/2)*(ch+GAP+70)}})).concat(hq?[]:[{k:'rest',id:'rest',crew:restCrew,x:GAP+(sites.length%2)*(cw+GAP),y:campTop+GAP+Math.floor(sites.length/2)*(ch+GAP)}]).concat(vil);
+      .concat(sites.map((p,i)=>{const mvd=q=>q.spot&&Number.isFinite(q.spot.x)&&Number.isFinite(q.spot.y),side=p.ext&&hq,g=hq?sites.slice(0,i).filter(q=>!q.ext&&!mvd(q)).length:sites.slice(0,i).filter(q=>!mvd(q)).length,eg=sites.slice(0,i).filter(q=>q.ext&&!mvd(q)).length;if(mvd(p))return{k:'site',id:p.id,p,crew:screws[i],tier:vts[i],x:p.spot.x,y:p.spot.y,moved:true};return side?{k:'site',id:p.id,p,crew:screws[i],tier:vts[i],x:HQ.U+150,y:MG+340+eg*(ch+GAP+90)}:{k:'site',id:p.id,p,crew:screws[i],tier:vts[i],x:GAP+(g%2)*(cw+GAP),y:campTop+GAP+120+Math.floor(g/2)*(ch+GAP+70)}})).concat(hq?[]:[{k:'rest',id:'rest',crew:restCrew,x:GAP+(sites.length%2)*(cw+GAP),y:campTop+GAP+Math.floor(sites.length/2)*(ch+GAP)}]).concat(vil);
     items.forEach(it=>{if(it.k==='vg')return;const v=it.k==='site',bs=it.k==='base',vt=v?vtOf(it.p,it.tier):null,bt=bs?BASE.tiers[it.tier]:null;it.l=(it.x+it.y)*K2-(v?vt.ox:bs?bt.ox:TOX);it.t=(it.y-it.x)*K2*.5-(v?vt.oy:bs?bt.oy:TOY);it.tw=v?vt.w:bs?bt.w:TW;it.th=v?vt.h:bs?bt.h:TH});
     const hqL=-HQ.ox,hqT=-HQ.oy;
     const PADX=hq?(innerWidth<=1000?150:560):0,PADY=hq?(innerWidth<=1000?110:380):0,minL=Math.min(...items.map(it=>it.l),hq?hqL:1e9)-PADX,minT=Math.min(...items.map(it=>it.t),hq?hqT:1e9)-PADY;
@@ -3028,7 +3032,7 @@ function render(){
           ${ui.unlocked?`<span class="sp"><button class="mini" data-act="newmember" data-dept="${d.id}">+ Member</button><button class="mini" data-act="editdept" data-id="${d.id}">Edit</button></span>`:''}</div>`,hq?0:WALLH,d.color,d.theme,rdd);
     }).join('')+CARDS.join('')+(hq?siteHTML(hqL-minL+HQ.ox,hqT-minT+HQ.oy):'');
     NPC_ORG={x:hqL-minL+HQ.ox,y:hqT-minT+HQ.oy};floors.classList.toggle('hlon',!!ui.hl);npcMount(false);
-    for(const k in COMM_SITES)delete COMM_SITES[k];items.forEach(it=>{if(it.k==='site'){const vt=vtOf(it.p,it.tier);COMM_SITES[it.p.id]={u:it.x+vt.W*.5,v:it.y+vt.H*.55,x:it.x,y:it.y,W:vt.W,H:vt.H,z:Math.round(it.t-minT)+1000+Math.round(vt.oy)}}});commMount(ms);
+    for(const k in SITEREG)delete SITEREG[k];items.forEach(it=>{if(it.k==='site')SITEREG[it.p.id]={x:it.x,y:it.y,vt:vtOf(it.p,it.tier)};if(it.k==='vg')SITEREG.__vg={x:it.x,y:it.y,X1:it.X1,Y1:it.Y1}});for(const k in COMM_SITES)delete COMM_SITES[k];items.forEach(it=>{if(it.k==='site'){const vt=vtOf(it.p,it.tier);COMM_SITES[it.p.id]={u:it.x+vt.W*.5,v:it.y+vt.H*.55,x:it.x,y:it.y,W:vt.W,H:vt.H,z:Math.round(it.t-minT)+1000+Math.round(vt.oy)}}});commMount(ms);
     setTimeout(()=>wanderStep(0,true),0);fit();
   }
 
@@ -4618,11 +4622,46 @@ function poleFlags(p,vt,k){
   const F=BASE.flag,ci0=Math.max(0,PJPAL.indexOf(projColor(p.id)));let o='',j=0;
   for(const side of[-1,1])for(let q=0;q<2;q++,j++){
     const u=vt.W/2+side*(64+q*34)*1.45,v=-72+30*1.45,z=(1.8+48+q*16)*1.45,[x,y]=tz(u,v,z),ci=(ci0+j*3)%F.rows;
-    o+=`<i class="cb-flag" style="z-index:4;left:${(x-(side<0?F.w-3:3)).toFixed(1)}px;top:${(y-8).toFixed(1)}px;width:${F.w}px;height:${F.h}px;background-image:url(${F.s});background-size:${F.w*F.n}px ${F.h*F.rows}px;background-position:0 ${-ci*F.h}px;--n:${F.n};--cw:${F.w}px${side<0?';transform:scaleX(-1)':''}"></i>`}
+    o+=`<i class="cb-flag" style="z-index:4;left:${(x-3).toFixed(1)}px;top:${(y-8).toFixed(1)}px;width:${F.w}px;height:${F.h}px;background-image:url(${F.s});background-size:${F.w*F.n}px ${F.h*F.rows}px;background-position:0 ${-ci*F.h}px;--n:${F.n};--cw:${F.w}px"></i>`}
   return o}
 function lmkHTML(p,vt){
   const k=catKey(p);if(!k||!LMK||!LMK[k]||!(CAT_ART&&CAT_ART[k]))return '';
   return poleFlags(p,vt,k)+LMK[k].map(a=>{const[x,y]=tz(vt.W/2+a.du,a.dv,a.z);
     return `<i class="lmk" style="left:${(x-a.ax*1.5).toFixed(1)}px;top:${(y-a.ay*1.5).toFixed(1)}px;width:${a.w}px;height:${a.h}px;background-image:url(${TILES['lm_'+k+'_'+a.name]});--n:${a.n};--cw:${a.w}px;--d:${(a.n/a.fps).toFixed(2)}s;background-size:calc(var(--cw)*var(--n)) ${a.h}px"></i>`}).join('');
 }
+
+/* ---------- move project offices: drag a venue to any free patch of lawn; the spot is saved as project.spot = {x, y} (world units, like completed-project bases) ---------- */
+var SITEREG={};
+setTimeout(()=>{
+  let dg=null;const sc=()=>+getComputedStyle(floors).getPropertyValue('--s')||1;
+  const clash=(id,x,y,W,H)=>{const M=34,hit=(a,b,c,d)=>x<c+M&&x+W>a-M&&y<d+M&&y+H>b-M;
+    if(hit(0,0,HQ.U,HQ.V+HQ.front*.4))return true;
+    for(const k in SITEREG){if(k===id||k==='__vg')continue;const s=SITEREG[k];if(hit(s.x,s.y,s.x+s.vt.W,s.y+s.vt.H))return true}
+    const vg=SITEREG.__vg;if(vg&&hit(vg.x,vg.y,vg.X1,vg.Y1))return true;return false};
+  floors.addEventListener('pointerdown',e=>{
+    const h=e.target.closest?.('.rw.site > .hit');if(!h||e.button!==0||!ui.unlocked)return;
+    const c=h.parentElement,id=c.dataset.id,s=SITEREG[id];if(!s)return;
+    dg={c,id,s,x:e.clientX,y:e.clientY,nx:s.x,ny:s.y,sc:sc(),sl:map.scrollLeft,st:map.scrollTop,moved:false,ok:true,z:c.style.zIndex};
+  },true);
+  addEventListener('pointermove',e=>{
+    if(!dg)return;dg.ev=e;const dx=(e.clientX-dg.x+map.scrollLeft-dg.sl)/dg.sc,dy=(e.clientY-dg.y+map.scrollTop-dg.st)/dg.sc;if(!dg.moved&&Math.hypot(dx,dy)<8)return;
+    if(!dg.moved){dg.moved=true;dg.c.classList.add('drag');dg.c.style.zIndex=99999;try{dg.c.firstElementChild&&0}catch{}}
+    dg.c.style.transform=`translate(${dx}px,${dy}px)`;
+    const du=(dx/K2-2*dy/K2)/2,dv=(dx/K2+2*dy/K2)/2,vt=dg.s.vt;dg.nx=Math.round((dg.s.x+du)/10)*10;dg.ny=Math.round((dg.s.y+dv)/10)*10;dg.ok=!clash(dg.id,dg.nx,dg.ny,vt.W,vt.H);
+    let g=floors.querySelector('.cb-snap');if(!g){g=document.createElement('div');g.className='cb-snap';g.style.width=vt.w+'px';g.style.height=vt.h+'px';
+      g.style.clipPath='polygon('+[[0,0],[vt.W,0],[vt.W,vt.H],[0,vt.H]].map(([u,v])=>(vt.ox+(u+v)*K2).toFixed(1)+'px '+(vt.oy+(v-u)*K2*.5).toFixed(1)+'px').join(',')+')';floors.append(g)}
+    const r=map.getBoundingClientRect(),edge=70;dg.vx=e.clientX<r.left+edge?-1:e.clientX>r.right-edge?1:0;dg.vy=e.clientY<r.top+edge+60?-1:e.clientY>r.bottom-edge?1:0;
+    if((dg.vx||dg.vy)&&!dg.raf){const tick=()=>{if(!dg||!(dg.vx||dg.vy)){if(dg)dg.raf=0;return}map.scrollLeft+=dg.vx*14;map.scrollTop+=dg.vy*14;if(dg.ev)dispatchEvent(new PointerEvent('pointermove',{clientX:dg.ev.clientX,clientY:dg.ev.clientY}));dg.raf=requestAnimationFrame(tick)};dg.raf=requestAnimationFrame(tick)}
+    g.classList.toggle('bad',!dg.ok);g.style.left=(dg.c.offsetLeft+((dg.nx-dg.s.x)+(dg.ny-dg.s.y))*K2)+'px';g.style.top=(dg.c.offsetTop+((dg.ny-dg.s.y)-(dg.nx-dg.s.x))*K2*.5)+'px';
+  });
+  const end=async e=>{
+    if(!dg)return;const d=dg;dg=null;if(d.raf)cancelAnimationFrame(d.raf);floors.querySelector('.cb-snap')?.remove();if(!d.moved)return;
+    d.c.classList.remove('drag');d.c.style.transform='';d.c.style.zIndex=d.z;d.c.dataset.moved='1';setTimeout(()=>{delete d.c.dataset.moved},0);
+    if(e.type==='pointercancel'||(d.nx===d.s.x&&d.ny===d.s.y))return;
+    if(!d.ok)return toast('That spot is taken. Drop the office on an empty patch of grass.');
+    if(await save(()=>api.upd('projects',d.id,{spot:{x:d.nx,y:d.ny}}),''))render();
+  };
+  addEventListener('pointerup',end);addEventListener('pointercancel',end);
+  floors.addEventListener('click',e=>{const h=e.target.closest?.('.rw.site > .hit');if(h&&h.parentElement.dataset.moved){e.stopPropagation();e.preventDefault()}},true);
+},0);
 </script>
