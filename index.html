@@ -1701,6 +1701,15 @@ small,.tlm-d,.pk em,.qmain small{font-size:11.5px}
   .topright .clock{flex:none;max-width:118px;white-space:normal;line-height:1.15;text-align:center;padding:4px 8px}
   .lgbar .lg{min-height:36px}
 }
+
+/* Tasks page: the two groups of tabs look different and say what they do */
+.tp-bar{gap:18px}
+.tp-mode{border-bottom:0;background:#ffffff14;border-radius:99px;padding:3px;gap:2px;margin-right:6px}
+.tp-mode button{margin:0;border:0;border-radius:99px;padding:7px 16px}
+.tp-mode button[aria-selected=true]{background:#6ca3ff;color:#0b1630}
+.tp-mode::before,.tp-bar>.tp-tabs:not(.tp-mode)::before{font:800 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);align-self:center;padding:0 8px 0 10px}
+.tp-mode::before{content:"View"}
+.tp-bar>.tp-tabs:not(.tp-mode)::before{content:"Showing";padding-left:0}
 </style>
 
 <div class="app">
@@ -3170,12 +3179,12 @@ map.addEventListener('click',e=>{
   ui.rexec=false;ui.rdept=r.dataset.id;ui.filter='all';ui.tab='roster';render(); // a department: its members
 },true);
 map.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();zoomMap(e.deltaY<0?1.1:.9)}},{passive:false});
-function zoomMap(f){if(f)ui.zoom=Math.max(.6,Math.min(2.2,ui.zoom*f));else{if(ui.zoom===1)ui.fitAll=!ui.fitAll;ui.zoom=1;map._hq=false}fit()}
+function zoomMap(f){if(f)ui.zoom=Math.max(.6,Math.min(2.2,ui.zoom*f));else{if(ui.zoom===1)ui.fitAll=!ui.fitAll;ui.zoom=1;map._hq=false;map._tx=false}fit()}
 
 function fit(){
   if(!iso.W){stage.style.width='100%';stage.style.height='0';return}
-  const mob=innerWidth<=1000,onMap=!mob&&ui.panels&&(ui.tab||'map')==='map',rc=document.querySelector('.rcol'),br=document.querySelector('.brow');
-  const padL=mob?10:104,padT=mob?10:(ui.tab||'map')==='map'?112:70,padR=mob?10:onMap&&rc.offsetWidth?rc.offsetWidth+32:16,padB=mob?10:onMap?(ui.drawer&&br.offsetHeight?br.offsetHeight+80:60):16;
+  const TOPX=320,mob=innerWidth<=1000,onMap=!mob&&ui.panels&&(ui.tab||'map')==='map',rc=document.querySelector('.rcol'),br=document.querySelector('.brow');
+  const padL=mob?10:104,padT=mob?10:(ui.tab||'map')==='map'?112+TOPX:70,padR=mob?10:onMap&&rc.offsetWidth?rc.offsetWidth+32:16,padB=mob?10:onMap?(ui.drawer&&br.offsetHeight?br.offsetHeight+80:60):16;
   /* default view fits the headquarters itself (big and readable); "All" shows the venues and Rest area too */
   const hqf=!!iso.hq&&!ui.fitAll&&!mob,fw=hqf?HQ.w:iso.W,fh=hqf?HQ.h:iso.H,padR2=hqf?16:padR;
   const avail=Math.max(300,map.clientWidth-padL-padR2),availH=Math.max(240,map.clientHeight-padT-padB);
@@ -3188,6 +3197,7 @@ function fit(){
     map.style.setProperty('background-image',LAWN.u,'important');map.style.setProperty('background-size',`${(w*LAWN.k).toFixed(2)}px ${(h*LAWN.k).toFixed(2)}px`,'important');
     map.style.setProperty('background-position',`${mod(ox,w*LAWN.k).toFixed(2)}px ${mod(oy-h/2,h*LAWN.k).toFixed(2)}px`,'important');map.style.setProperty('background-attachment','local','important');map.style.setProperty('background-color',LAWN.c,'important')}
   {const fb=document.querySelector('.mapctl [data-v="0"]');if(fb){fb.textContent=hqf?'All':'HQ';fb.title=hqf?'Show everything: venues and Rest area too':'Back to the headquarters'}}
+  if(!mob&&(ui.tab||'map')==='map'&&map.clientHeight>0&&iso.hq){if(!map._tx){map._tx=true;map.scrollTop=TOPX-100}}else if(ui.tab&&ui.tab!=='map')map._tx=false;
   if(mob&&iso.hq&&map.clientWidth>0&&!map._hq){map._hq=true;const cx=parseFloat(floors.style.left)+((iso.hx||0)+HQ.w/2)*s,cy=parseFloat(floors.style.top)+((iso.hy||0)+HQ.h/2)*s;map.scrollLeft=Math.max(0,cx-map.clientWidth/2);map.scrollTop=Math.max(0,cy-map.clientHeight/2);map._init=true}
   if(!map._init&&stage.offsetWidth>map.clientWidth){map._init=true;if(!hqf)map.scrollLeft=(stage.offsetWidth-map.clientWidth)/2}
 }
@@ -3635,7 +3645,7 @@ function renderTasks(){
   }
   if(ui.tmode==='board')list=taskBoardHTML(ps,pf);taskpage.classList.toggle('tp-board',ui.tmode==='board');
   taskpage.innerHTML=`<div class="pg-h"><h2>Tasks</h2>${ui.unlocked?'<button class="btn primary" data-act="snew" data-pid="">+ New task</button>':''}</div>
-    <div class="tp-bar">${tmodeHTML()}<div class="tp-tabs" role="tablist"><button type="button" role="tab" aria-selected="${view==='open'}" data-act="tview" data-v="open">Open<small>${openAll.length}</small></button><button type="button" role="tab" aria-selected="${view==='history'}" data-act="tview" data-v="history">History<small>${histAll.length}</small></button></div></div>
+    <div class="tp-bar">${tmodeHTML()}<div class="tp-tabs" role="tablist" aria-label="Show"><button type="button" role="tab" aria-selected="${view==='open'}" data-act="tview" data-v="open">Open<small>${openAll.length}</small></button><button type="button" role="tab" aria-selected="${view==='history'}" data-act="tview" data-v="history">History<small>${histAll.length}</small></button></div></div>
     <div class="tp-chips">${chips.map(([id,l])=>`<button type="button" class="tp-chip${pf===id?' on':''}" data-act="tproj" data-id="${id}">${esc(l)}<small>${cnt(id)}</small></button>`).join('')}</div>
     <p class="hint pg-p" style="margin:0 18px 6px">${ui.unlocked?'Tap a task to edit it. Tap the circle to mark it done.':'Tap a task to open it. Use the Submission bin inside to hand in your work.'}</p>
     <div class="tp-list">${list}</div>`;
@@ -4825,5 +4835,32 @@ document.addEventListener('click',e=>{
   n.classList.add('mm-open');
   if(e.target.closest('.mm-plusb'))n.classList.toggle('mm-menuon');
 });
+
+/* pop-ups (member, project, department): named for screen readers, focus moves in, Tab stays inside, and focus goes back to where it came from on close */
+(function(){
+  const ov=document.getElementById('overlay');if(!ov)return;
+  let opener=null,wasOpen=false;
+  document.addEventListener('focusin',e=>{if(!ov.contains(e.target)&&!(e.target.closest&&e.target.closest('.toast')))opener=e.target},true);
+  /* closing redraws the page, so the button that opened the pop-up may be a new element: find its twin by its data attributes */
+  const twin=o=>{if(!o)return null;if(document.contains(o))return o;const d=o.dataset||{};if(!d.act)return null;let q='[data-act="'+d.act+'"]';['v','id','pid','tid','dept'].forEach(k=>{if(d[k])q+='['+'data-'+k+'="'+d[k]+'"]'});try{return document.querySelector(q)}catch(_){return null}};
+  const focusables=p=>[...p.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(e=>e.getClientRects().length&&!(e.closest('details:not([open])')&&!e.closest('summary')));
+  new MutationObserver(()=>{
+    const pn=ov.querySelector('[role=dialog]');
+    if(!pn){
+      if(wasOpen){wasOpen=false;const o=twin(opener),a=document.activeElement;if(o&&(!a||a===document.body||ov.contains(a)))o.focus({preventScroll:true})}
+      return}
+    if(!wasOpen){const a=document.activeElement;if(a&&a!==document.body&&!ov.contains(a))opener=a}
+    wasOpen=true;pn.tabIndex=-1;
+    if(!pn.hasAttribute('aria-labelledby')&&!pn.hasAttribute('aria-label')){const h=pn.querySelector('h1,h2,h3');if(h){h.id=h.id||'dlg-title';pn.setAttribute('aria-labelledby',h.id)}else pn.setAttribute('aria-label','Details')}
+    if(!pn.contains(document.activeElement)){const f=focusables(pn),t=f.find(x=>!x.classList.contains('pclose'))||f[0];(t||pn).focus({preventScroll:true})}
+  }).observe(ov,{childList:true,subtree:true});
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Tab')return;const pn=ov.querySelector('[role=dialog]');if(!pn)return;
+    const f=focusables(pn);if(!f.length){e.preventDefault();pn.focus();return}
+    const first=f[0],last=f[f.length-1],a=document.activeElement;
+    if(!pn.contains(a)){e.preventDefault();first.focus();return}
+    if(e.shiftKey&&a===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&a===last){e.preventDefault();first.focus()}
+  },true);
+})();
 </script>
 </body></html>
