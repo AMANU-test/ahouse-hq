@@ -1639,6 +1639,30 @@ details.deploy-box[open]>summary::before{transform:rotate(90deg)}
 details.deploy-box>summary em{margin-left:auto;font-style:normal;letter-spacing:0;text-transform:none;font-weight:700;color:#ffc48a}
 details.deploy-box>summary:hover{color:var(--ink)}
 details.deploy-box .dp-list{display:grid;gap:6px;padding:0 12px 10px;max-height:min(40vh,320px);overflow:auto}
+
+/* tasks: drop onto another to group */
+.pb-card.merge{outline:3px dashed #ffd24a;outline-offset:2px;transform:scale(1.02)}
+.pb-card.merge::after{content:"Group together";position:absolute;right:10px;top:-11px;background:#ffd24a;color:#1b0f00;font:800 11px var(--body);padding:3px 9px;border-radius:99px;pointer-events:none}
+.umb-dlg-scrim{position:fixed;inset:0;z-index:100000;background:#030a1acc;display:grid;place-items:center;padding:16px}
+.umb-dlg{width:min(420px,100%);display:grid;gap:12px;padding:20px;border-radius:18px;background:oklch(.22 .05 258);border:1px solid #ffffff2a;box-shadow:0 24px 60px #000a}
+.umb-dlg h3{margin:0;font:800 18px var(--display)}
+.umb-dlg ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}.umb-dlg li{padding:8px 10px;border-radius:10px;background:#ffffff12;font:700 14px var(--body)}
+.umb-dlg label{display:grid;gap:6px;font:700 13px var(--body);color:var(--mute)}
+.umb-dlg input{padding:10px 12px;border-radius:10px;border:1px solid #ffffff44;background:#0e1a33;color:#fff;font:700 15px var(--body)}
+.umb-btns{display:flex;gap:8px}
+/* team map */
+.mm-node .mm-grip{cursor:grab}
+.mm-tname{all:unset;box-sizing:border-box;display:block;width:100%;font:800 13px/1.2 var(--body);color:#fff;padding:2px 5px;margin:-2px -5px;border-radius:6px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;cursor:text}
+.mm-tname:hover{background:#ffffff14}.mm-tname:focus{background:#00000055;box-shadow:0 0 0 2px #a8c7ff}
+.mm-node.team .mm-tx{min-width:0;flex:1}
+.mm-acts{position:absolute;right:8px;top:-13px;display:flex;gap:4px;opacity:0;pointer-events:none;transition:opacity var(--t2) var(--ease-out)}
+.mm-node:hover .mm-acts,.mm-node:focus-within .mm-acts{opacity:1;pointer-events:auto}
+.mm-acts button{display:grid;place-items:center;width:26px;height:26px;padding:0;border-radius:50%;border:1px solid #ffffff55;background:#1c2b4d;color:#fff;font:800 12px/1 var(--body);cursor:pointer;box-shadow:0 2px 6px #0006}
+.mm-acts button:hover{background:#3563c9}.mm-acts button.del:hover{background:#d6403a}
+.mm.dragging .mm-node:not(.dragsrc),.mm.dragging .mm-root{outline:2px dashed #a8c7ff88;outline-offset:3px}
+.mm.dragging .mm-node.drop,.mm.dragging .mm-root.drop{outline:3px solid #ffd24a;outline-offset:3px;background-color:#ffd24a22}
+.mm-node.drop::after,.mm-root.drop::after{content:attr(data-hint);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;background:#ffd24a;color:#1b0f00;font:800 11px var(--body);padding:4px 10px;border-radius:99px;z-index:5;pointer-events:none}
+.mm-node.dragsrc{opacity:.4}
 </style>
 
 <div class="app">
@@ -2532,7 +2556,7 @@ function dueText(p){
   const d=Math.round((new Date(p.due+'T23:59')-Date.now())/864e5);
   return d<0?`${-d}D LATE`:d===0?'DUE TODAY':`${d}D LEFT`;
 }
-const RW=340,GAP=84,WH=60,EXTRA=WH+50;
+const RW=340,GAP=84,WH=60,EXTRA=WH+50+420;
 const box=(cls,x,y,w,d,extra='')=>`<div class="box ${cls}" style="left:${x}px;top:${y}px;width:${w}px;height:${d}px;${extra}"><i class="l"></i><i class="f"></i><i class="t"></i></div>`;
 let iso={W:0,H:0};
 function fit(){
@@ -3459,18 +3483,18 @@ function mindmapHTML(p,pid){
     else ch.forEach(c=>{const r=pos[c],x1=a.x+a.w/2,y1=a.y+a.h,x2=r.x+r.w/2,y2=r.y,ym=(y1+y2)/2;links+=line(`M${x1} ${y1}C${x1} ${ym} ${x2} ${ym} ${x2} ${y2}`,q==='root'&&!teams[c]?'#5b93ee':colOf(c))})});
   const count=id=>{let n=0;const walk=x=>(kids[x]||[]).forEach(c=>{if(!teams[c])n++;walk(c)});walk(id);return n};
   const node=id=>{const q=pos[id],sel=ui.osel===id;
-    if(teams[id])return `<button type="button" class="mm-node team${sel?' sel':''}" data-act="mmsel" data-id="${id}" data-pid="${pid}" data-drop="mmnode"${ed?' draggable="true"':''} style="left:${q.x}px;top:${q.y}px" title="${esc(teams[id].name)}"><i class="mm-ico">▦</i><span class="mm-tx"><b>${esc(teams[id].name)}</b><em>${count(id)} ${count(id)===1?'person':'people'}</em></span></button>`;
+    if(teams[id])return `<div class="mm-node team${sel?' sel':''}" data-id="${id}" data-pid="${pid}" data-drop="mmnode" data-hint="Add to ${esc(teams[id].name)}"${ed?' draggable="true"':''} style="left:${q.x}px;top:${q.y}px"><i class="mm-ico mm-grip" title="${ed?'Drag to move this team':''}">\u25A6</i><span class="mm-tx">${ed?`<input class="mm-tname" value="${esc(teams[id].name)}" data-pid="${pid}" data-id="${id}" maxlength="40" spellcheck="false" autocomplete="off" aria-label="Team name (click to rename)" title="Click to rename">`:`<b>${esc(teams[id].name)}</b>`}<em>${count(id)} ${count(id)===1?'person':'people'}</em></span>${ed?`<span class="mm-acts"><button type="button" data-mm="add" data-pid="${pid}" data-id="${id}" title="Add people to this team" aria-label="Add people to this team">+\u{1F464}</button><button type="button" data-mm="team" data-pid="${pid}" data-id="${id}" title="Add a team inside this one" aria-label="Add a team inside this one">+\u25A6</button><button type="button" class="del" data-mm="del" data-pid="${pid}" data-id="${id}" title="Delete this team (its people stay)" aria-label="Delete this team">\u2715</button></span>`:''}</div>`;
     const m=st.members[id],s=statusOf(id,m);
-    return `<button type="button" class="mm-node${par[id]==='root'?' lead':''} ${s}${sel?' sel':''}" data-act="obox" data-id="${id}" data-pid="${pid}" data-drop="mmnode"${ed?' draggable="true"':''} style="left:${q.x}px;top:${q.y}px;--dc:${deptColor(m.dept)}" title="${esc(m.name+' · '+SL[s])}"><span class="mm-av">${figure(m,id)}</span><span class="mm-tx"><b>${esc(m.name)}</b><em>${esc(m.title||TIERS[m.stars||2])}</em></span>${par[id]==='root'?'<i class="mm-crown">♛</i>':''}</button>`};
+    return `<button type="button" class="mm-node${par[id]==='root'?' lead':''} ${s}${sel?' sel':''}" data-act="obox" data-id="${id}" data-pid="${pid}" data-drop="mmnode" data-hint="Report to ${esc(m.name.split(' ')[0])}"${ed?' draggable="true"':''} style="left:${q.x}px;top:${q.y}px;--dc:${deptColor(m.dept)}" title="${esc(m.name+' · '+SL[s])}"><span class="mm-av">${figure(m,id)}</span><span class="mm-tx"><b>${esc(m.name)}</b><em>${esc(m.title||TIERS[m.stars||2])}</em></span>${par[id]==='root'?'<i class="mm-crown">♛</i>':''}</button>`};
   const nteams=Object.keys(teams).length,r0=pos.root;
-  const root=`<div class="mm-root" data-drop="mmroot" data-pid="${pid}" style="left:${r0.x}px;top:0;width:${RW_}px"><b>${esc(p.name)}</b><em>${T.team.length} ${T.team.length===1?'person':'people'}${nteams?' · '+nteams+(nteams===1?' team':' teams'):''}</em></div>`;
+  const root=`<div class="mm-root" data-drop="mmroot" data-hint="Make top level" data-pid="${pid}" style="left:${r0.x}px;top:0;width:${RW_}px"><b>${esc(p.name)}</b><em>${T.team.length} ${T.team.length===1?'person':'people'}${nteams?' · '+nteams+(nteams===1?' team':' teams'):''}</em></div>`;
   const sel=ui.osel&&(teams[ui.osel]||T.team.includes(ui.osel))?ui.osel:null,selTeam=sel&&teams[sel],selM=sel&&!selTeam?st.members[sel]:null;
   const add=ui.mmadd&&ui.mmadd.pid===pid&&ed?ui.mmadd:null;
   const under=sel?`<button class="btn ghost" data-act="mmadd" data-pid="${pid}" data-parent="${sel}">+ Add person under</button><button class="btn ghost" data-act="mmaddteam" data-pid="${pid}" data-parent="${sel}">+ Add team under</button>`:'';
-  const bar=!sel?'':selTeam?(ed?`<div class="ob-sel"><span class="mm-ico">▦</span><input id="tm-name" class="tm-name" value="${esc(selTeam.name)}" data-pid="${pid}" data-id="${sel}" aria-label="Team name" maxlength="40"><button class="btn primary" data-act="tmsave" data-pid="${pid}" data-id="${sel}">Save name</button>${under}<button class="btn danger" data-act="tmdel" data-pid="${pid}" data-id="${sel}">Delete team</button><button class="btn ghost" data-act="odesel">Done</button></div>`:'')
+  const bar=!sel?'':selTeam?''
     :`<div class="ob-sel"><b>${esc(selM.name)}</b> selected<button class="btn ghost" data-act="oprofile">Open profile</button>${ed?under+(par[sel]!=='root'?`<button class="btn ghost" data-act="mmlead" data-pid="${pid}">Make top level</button>`:'')+`<button class="btn danger" data-act="oremove" data-pid="${pid}">Remove from project</button>`:''}<button class="btn ghost" data-act="odesel">Done</button></div>`;
   return `<div class="ob">
-    ${ed?`<div class="ob-bar"><button class="btn primary" data-act="mmadd" data-pid="${pid}" data-parent="sel">+ Add people</button><button class="btn ghost" data-act="mmaddteam" data-pid="${pid}" data-parent="sel">+ Add team</button><span class="hint">Tap someone or a team to add under them, rename or remove. Drag onto another to change who they sit under.</span><span class="saved-pill">${savedPill()}</span></div>`:''}
+    ${ed?`<div class="ob-bar"><button class="btn primary" data-act="mmadd" data-pid="${pid}" data-parent="sel">+ Add people</button><button class="btn ghost" data-act="mmaddteam" data-pid="${pid}" data-parent="sel">+ Add team</button><span class="hint">Click a team name to rename it. Hover a team for + and \u2715. Drag any box onto another one to move it under them.</span><span class="saved-pill">${savedPill()}</span></div>`:''}
     ${bar}
     ${add?`<div class="ob-sel mm-adding">Adding under ${esc(nameOf(add.parent))}. Tap people below.<button class="btn primary" data-act="mmdone">Done</button></div>`:''}
     <div class="mm-scroll"><div class="mm" style="width:${W}px;height:${H}px"><svg width="${W}" height="${H}" aria-hidden="true">${links}</svg>${root}${Object.keys(pos).filter(i=>i!=='root').map(node).join('')}</div></div>
@@ -3844,7 +3868,7 @@ document.addEventListener('click',async e=>{
   if(a==='mmadd'){ui.mmadd={pid:b.dataset.pid,parent:b.dataset.parent==='sel'?(ui.osel||'root'):b.dataset.parent};ui.osel=null;return render()}
   if(a==='mmsel'){if(!canEd(st.projects[b.dataset.pid]))return;ui.osel=ui.osel===b.dataset.id?null:b.dataset.id;return render()}
   if(a==='mmaddteam'){const pid=b.dataset.pid,par0=b.dataset.parent==='sel'?(ui.osel||'root'):b.dataset.parent,tid=uid();if(!canEd(st.projects[pid]))return;
-    if(await treeSave(pid,t=>{t.teams[tid]={name:'New team'};t.par[tid]=par0;t.ord.push(tid)})){ui.osel=tid;ui.mmadd=null;render();setTimeout(()=>{const i=document.getElementById('tm-name');if(i){i.focus();i.select()}},80)}return}
+    if(await treeSave(pid,t=>{t.teams[tid]={name:'New team'};t.par[tid]=par0;t.ord.push(tid)})){ui.osel=tid;ui.mmadd=null;render();setTimeout(()=>{const i=document.querySelector('.mm-tname[data-id="'+tid+'"]');if(i){i.focus();i.select()}},80)}return}
   if(a==='tmsave'){const i=document.getElementById('tm-name'),pid=b.dataset.pid,id=b.dataset.id;if(!i||!canEd(st.projects[pid]))return;const nm=i.value.trim()||'Team';await treeSave(pid,t=>{if(t.teams[id])t.teams[id]={...t.teams[id],name:nm}});return toast('Team renamed')}
   if(a==='tmdel'){const pid=b.dataset.pid,id=b.dataset.id;if(!canEd(st.projects[pid]))return;ui.osel=null;return treeSave(pid,t=>{const up=t.par[id]||'root';Object.keys(t.par).forEach(k=>{if(t.par[k]===id)t.par[k]=up});delete t.teams[id];delete t.par[id];t.ord=t.ord.filter(x=>x!==id)})}
   if(a==='mmdone'){ui.mmadd=null;return render()}
@@ -4706,4 +4730,49 @@ function commPath(a,b,fromId,toId){
 
 /* the "Deploy to projects" box remembers whether it was left open */
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.classList&&d.classList.contains('deploy-box'))ui.dpOpen=d.open},true);
+
+/* ---------- drop one task onto another (same column) to group them under an umbrella ---------- */
+(function(){
+  let src=null;const cardOf=e=>e.target.closest&&e.target.closest('.pb-card[draggable]');
+  const mergeable=e=>{const c=cardOf(e);if(!c||!src||c.dataset.tid===src.tid||c.dataset.pid!==src.pid)return null;const col=c.closest('.pb-col');if(!col||col.dataset.col!==src.col)return null;const p=st.projects[src.pid];return p&&canEd(p)?c:null};
+  document.addEventListener('dragstart',e=>{const c=cardOf(e);src=c?{tid:c.dataset.tid,pid:c.dataset.pid,col:(c.closest('.pb-col')||{dataset:{}}).dataset.col}:null},true);
+  document.addEventListener('dragend',()=>{src=null;document.querySelectorAll('.pb-card.merge').forEach(x=>x.classList.remove('merge'))},true);
+  document.addEventListener('dragover',e=>{const c=mergeable(e);document.querySelectorAll('.pb-card.merge').forEach(x=>x!==c&&x.classList.remove('merge'));if(c){e.preventDefault();c.classList.add('merge')}},true);
+  const askUmbrella=(an,bn)=>new Promise(res=>{
+    const d=document.createElement('div');d.className='umb-dlg-scrim';
+    d.innerHTML=`<form class="umb-dlg" role="dialog" aria-modal="true" aria-label="New umbrella"><h3>Group these under an umbrella</h3><ul><li>${esc(an)}</li><li>${esc(bn)}</li></ul><label>Umbrella name<input id="umb-name" maxlength="40" autocomplete="off" placeholder="e.g. Exrel work"></label><div class="umb-btns"><button class="btn primary">Create umbrella</button><button type="button" class="btn ghost" data-x>Cancel</button></div></form>`;
+    document.body.append(d);const i=d.querySelector('input');i.focus();const done=v=>{d.remove();res(v)};
+    d.querySelector('form').onsubmit=ev=>{ev.preventDefault();const v=i.value.trim();if(!v){i.focus();return}done(v)};
+    d.querySelector('[data-x]').onclick=()=>done(null);d.addEventListener('keydown',ev=>{if(ev.key==='Escape')done(null)});d.addEventListener('mousedown',ev=>{if(ev.target===d)done(null)})});
+  document.addEventListener('drop',async e=>{
+    const c=mergeable(e);if(!c)return;e.preventDefault();e.stopPropagation();c.classList.remove('merge');
+    const pid=src.pid,aId=src.tid,bId=c.dataset.tid;src=null;document.querySelectorAll('.pb-card.dragging').forEach(x=>x.classList.remove('dragging'));
+    const p=st.projects[pid];if(!p||!canEd(p))return;
+    const dl=(p.deliverables||[]).map(x=>({...x})),a=dl.find(x=>x.id===aId),b=dl.find(x=>x.id===bId);if(!a||!b)return;
+    const gs=grpsOf(p).slice(),known=g=>g&&gs.some(q=>q.id===g);
+    if(known(b.group)){a.group=b.group;return void(await save(()=>api.upd('projects',pid,{deliverables:dl}),'Added to the umbrella "'+gs.find(q=>q.id===b.group).name+'"')&&render())}
+    if(known(a.group)){b.group=a.group;return void(await save(()=>api.upd('projects',pid,{deliverables:dl}),'Added to the umbrella "'+gs.find(q=>q.id===a.group).name+'"')&&render())}
+    const nm=await askUmbrella(a.name,b.name);if(!nm)return;
+    const gid=uid();gs.push({id:gid,name:nm});a.group=gid;b.group=gid;
+    if(await save(()=>api.upd('projects',pid,{groups:gs,deliverables:dl}),'Umbrella "'+nm+'" created'))render();
+  },true);
+})();
+
+/* ---------- team map: rename a team right on its box, + and delete on hover, and a clearer drag and drop ---------- */
+document.addEventListener('keydown',e=>{const i=e.target&&e.target.classList&&e.target.classList.contains('mm-tname')?e.target:null;if(!i)return;
+  if(e.key==='Enter'){e.preventDefault();i.blur()}else if(e.key==='Escape'){i.value=i.defaultValue;i.blur()}});
+document.addEventListener('change',e=>{const i=e.target&&e.target.classList&&e.target.classList.contains('mm-tname')?e.target:null;if(!i)return;
+  const pid=i.dataset.pid,id=i.dataset.id;if(!canEd(st.projects[pid]))return;const nm=i.value.trim()||'Team';i.value=nm;i.defaultValue=nm;
+  treeSave(pid,t=>{if(t.teams[id])t.teams[id]={...t.teams[id],name:nm}})});
+document.addEventListener('focusin',e=>{const i=e.target;if(i&&i.classList&&i.classList.contains('mm-tname')){const n=i.closest('.mm-node');if(n)n.draggable=false}});   // so the text can be edited without grabbing the box
+document.addEventListener('focusout',e=>{const i=e.target;if(i&&i.classList&&i.classList.contains('mm-tname')){const n=i.closest('.mm-node');if(n&&ui.unlocked)n.draggable=true}});
+document.addEventListener('click',async e=>{
+  const b=e.target.closest&&e.target.closest('[data-mm]');if(!b)return;e.stopPropagation();e.preventDefault();
+  const pid=b.dataset.pid,id=b.dataset.id,k=b.dataset.mm;if(!canEd(st.projects[pid]))return;
+  if(k==='add'){ui.mmadd={pid,parent:id};ui.osel=null;return render()}
+  if(k==='team'){const tid=uid();if(await treeSave(pid,t=>{t.teams[tid]={name:'New team'};t.par[tid]=id;t.ord.push(tid)})){ui.mmadd=null;render();setTimeout(()=>{const i=document.querySelector('.mm-tname[data-id="'+tid+'"]');if(i){i.focus();i.select()}},80)}return}
+  if(k==='del'){ui.osel=null;return treeSave(pid,t=>{const up=t.par[id]||'root';Object.keys(t.par).forEach(q=>{if(t.par[q]===id)t.par[q]=up});delete t.teams[id];delete t.par[id];t.ord=t.ord.filter(x=>x!==id)})}
+},true);
+document.addEventListener('dragstart',e=>{const n=e.target.closest&&e.target.closest('.mm-node');if(!n)return;n.classList.add('dragsrc');const m=n.closest('.mm');if(m)m.classList.add('dragging')},true);
+document.addEventListener('dragend',()=>{document.querySelectorAll('.mm.dragging').forEach(m=>m.classList.remove('dragging'));document.querySelectorAll('.mm-node.dragsrc').forEach(n=>n.classList.remove('dragsrc'))},true);
 </script>
