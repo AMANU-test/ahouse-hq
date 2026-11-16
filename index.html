@@ -1676,6 +1676,31 @@ details.deploy-box .dp-list{display:grid;gap:6px;padding:0 12px 10px;max-height:
 .mm-menu button:hover{background:#3563c9}.mm-menu button.del{background:#5a1f26;border-color:#e0707a}.mm-menu button.del:hover{background:#d6403a}
 .mm-node.mm-open,.mm-root.mm-open{z-index:6}
 .mm-root{cursor:pointer}
+
+/* ===== usability pass (UX audit 16 Nov): bigger tap areas, readable small text ===== */
+/* every person on the map gets a tap area of about 44 screen px however far the map is zoomed; the picture does not change */
+.tok.pin::before{content:"";position:absolute;left:50%;top:50%;width:clamp(28px,calc(44px/var(--s,1)),64px);height:clamp(32px,calc(46px/var(--s,1)),64px);transform:translate(-50%,-50%)}
+/* small writing a notch bigger */
+.chip,.chip.sm{font-size:11px}
+small,.tlm-d,.pk em,.qmain small{font-size:11.5px}
+#rail button,.rail button,.rail span{font-size:12px}
+.qmain em.ok{color:#6fe083}
+.cb-lbl small{font-size:11.5px}.tlm-n em{font-size:12px}
+/* on phones and touch screens, controls reach 44 px */
+@media (pointer:coarse),(max-width:980px){
+  .mapctl button{min-width:44px;min-height:44px}
+  .lg,.drawerbtn,.mini2,.tl-sel,.search.glass{min-height:44px}
+  .link{min-height:44px;display:inline-flex;align-items:center}
+  .tlm-l li>button{min-height:44px}
+  button.cta{min-height:44px!important}
+}
+/* phones: search and clock share a row, the status chips stay compact, so the map starts higher up the screen */
+@media (max-width:520px){
+  .topright{flex-wrap:nowrap;gap:6px}
+  .topright .search{flex:1 1 0;min-width:0;width:auto}
+  .topright .clock{flex:none;max-width:118px;white-space:normal;line-height:1.15;text-align:center;padding:4px 8px}
+  .lgbar .lg{min-height:36px}
+}
 </style>
 
 <div class="app">
@@ -2963,7 +2988,7 @@ function pixSVG(svg,w,h,k=1.5){return new Promise(res=>{
 pixSVG(restTile(),TW,TH).then(u=>{if(u){TILES.rest=u;try{render()}catch(e){}}});
 const BEDPIX=new Map();
 let CARDS=[];
-const pillInk=hex=>{const h=String(hex||'').replace('#','');if(h.length<6)return '#fff';const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return (0.299*r+0.587*g+0.114*b)>150?'#1b0f00':'#fff'};
+const pillInk=hex=>{const h=String(hex||'').replace('#','');if(h.length<6)return '#fff';const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);const f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};const L=.2126*f(r)+.7152*f(g)+.0722*f(b);return (L+.05)/.0555>1.05/(L+.05)?'#1b0f00':'#fff'};
 function roomHTML(kind,id,left,top,tile,crew,signHTML,wall,dc,th,rd){
   const big=kind==='site',vt=big?vtOf(th&&th.pj,(th&&th.tier)||0):null,RW_=big?vt.W:(rd?rd.w:RWD),RH_=big?vt.H:(rd?rd.h:RHD);
   TX=big?vt.ox:TOX;TY=big?vt.oy:TOY;ROOM.W=RW_;ROOM.H=RH_;
@@ -3145,7 +3170,7 @@ map.addEventListener('click',e=>{
   ui.rexec=false;ui.rdept=r.dataset.id;ui.filter='all';ui.tab='roster';render(); // a department: its members
 },true);
 map.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();zoomMap(e.deltaY<0?1.1:.9)}},{passive:false});
-function zoomMap(f){if(f)ui.zoom=Math.max(.6,Math.min(2.2,ui.zoom*f));else{if(ui.zoom===1)ui.fitAll=!ui.fitAll;ui.zoom=1}fit()}
+function zoomMap(f){if(f)ui.zoom=Math.max(.6,Math.min(2.2,ui.zoom*f));else{if(ui.zoom===1)ui.fitAll=!ui.fitAll;ui.zoom=1;map._hq=false}fit()}
 
 function fit(){
   if(!iso.W){stage.style.width='100%';stage.style.height='0';return}
@@ -3163,6 +3188,7 @@ function fit(){
     map.style.setProperty('background-image',LAWN.u,'important');map.style.setProperty('background-size',`${(w*LAWN.k).toFixed(2)}px ${(h*LAWN.k).toFixed(2)}px`,'important');
     map.style.setProperty('background-position',`${mod(ox,w*LAWN.k).toFixed(2)}px ${mod(oy-h/2,h*LAWN.k).toFixed(2)}px`,'important');map.style.setProperty('background-attachment','local','important');map.style.setProperty('background-color',LAWN.c,'important')}
   {const fb=document.querySelector('.mapctl [data-v="0"]');if(fb){fb.textContent=hqf?'All':'HQ';fb.title=hqf?'Show everything: venues and Rest area too':'Back to the headquarters'}}
+  if(mob&&iso.hq&&map.clientWidth>0&&!map._hq){map._hq=true;const cx=parseFloat(floors.style.left)+((iso.hx||0)+HQ.w/2)*s,cy=parseFloat(floors.style.top)+((iso.hy||0)+HQ.h/2)*s;map.scrollLeft=Math.max(0,cx-map.clientWidth/2);map.scrollTop=Math.max(0,cy-map.clientHeight/2);map._init=true}
   if(!map._init&&stage.offsetWidth>map.clientWidth){map._init=true;if(!hqf)map.scrollLeft=(stage.offsetWidth-map.clientWidth)/2}
 }
 
